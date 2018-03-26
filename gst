@@ -131,7 +131,7 @@ elif (args.delete != None):
     fileList = ''
     for value in inputRange:
         fileList += statusList[value]['filePath'] + ' '
-    commandArray = ['rm', '{}'.format(fileList[:-1])]
+    commandArray = ['rm', '-r', '{}'.format(fileList[:-1])]
     bash(commandArray)
     displayList()
 # Edit file
