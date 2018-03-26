@@ -9,16 +9,17 @@ def bash(command):
     else:
         commandArray = command.split()
     proc = subprocess.Popen(commandArray, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
-    return proc
+    (output, err) = proc.communicate()
+    return output
 
 def GenerateList():
-    proc = bash('git status -s')
-    lines = proc.stdout.readlines()
+    output = bash('git status -s').decode('utf-8')
+    lines = output.split('\n')
     # Iterate through git status text
     statusList = []
     for line in lines:
-        line = line.decode('utf-8')
-        statusList.append({'mod': line[0:2], 'filePath': line[3:-1]})
+        if (line != ''):
+            statusList.append({'mod': line[0:2], 'filePath': line[3:]})
     return statusList
 
 def checkValidRef(num):
@@ -86,7 +87,6 @@ def displayList():
     statusList = GenerateList()
     header = Colors.colorize('#   INDEX     CUR_TREE  FILE', Colors.YELLOW)
     print(header)
-
     for (index, item) in enumerate(statusList):
         path = item['filePath']
         if (not args.v):
@@ -105,15 +105,19 @@ if (args.REF != None):
 elif (args.add != None):
     statusList = GenerateList()
     inputRange = parseRange(args.add)
+    fileList = ''
     for value in inputRange:
-        bash('git add {}'.format(statusList[value]['filePath']))
+        fileList += statusList[value]['filePath'] + ' '
+    bash('git add {}'.format(fileList[:-1]))
     displayList()
 # Checkout file
 elif (args.checkout != None):
     statusList = GenerateList()
     inputRange = parseRange(args.checkout)
+    fileList = ''
     for value in inputRange:
-        bash('git checkout HEAD {}'.format(statusList[value]['filePath']))
+        fileList += statusList[value]['filePath'] + ' '
+    bash('git checkout HEAD {}'.format(fileList[:-1]))
     displayList()
 # Show diff
 elif (args.diff != None):
@@ -124,9 +128,11 @@ elif (args.diff != None):
 elif (args.delete != None):
     statusList = GenerateList()
     inputRange = parseRange(args.delete)
+    fileList = ''
     for value in inputRange:
-        commandArray = ['rm', '{}'.format(statusList[value]['filePath'])]
-        bash(commandArray)
+        fileList += statusList[value]['filePath'] + ' '
+    commandArray = ['rm', '{}'.format(fileList[:-1])]
+    bash(commandArray)
     displayList()
 # Edit file
 elif (args.edit != None):
@@ -137,8 +143,10 @@ elif (args.edit != None):
 elif (args.reset != None):
     statusList = GenerateList()
     inputRange = parseRange(args.reset)
+    fileList = ''
     for value in inputRange:
-        bash('git reset HEAD {}'.format(statusList[value]['filePath']))
+        fileList += statusList[value]['filePath'] + ' '
+    bash('git reset HEAD {}'.format(fileList[:-1]))
     displayList()
 else:
     # Display list
