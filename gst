@@ -100,7 +100,6 @@ def displayList():
 if (args.REF != None):
     statusList = GenerateList()
     print(statusList[int(args.REF)]['filePath'])
-    displayList()
 # Add file to repo
 elif (args.add != None):
     statusList = GenerateList()
