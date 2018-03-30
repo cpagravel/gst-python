@@ -17,7 +17,6 @@ def GenerateList():
     if (len(err) != 0):
         raise Exception(err.decode('utf-8'))
     output = output.decode('utf-8')
-    # print(err)
     lines = output.split('\n')
     # Iterate through git status text
     statusList = []
@@ -37,7 +36,7 @@ def parseRange(string0):
     output = []
     parts = string0.split(',') # individual
     for part in parts:
-        bounds = part.split('-') # range selection
+        bounds = part.split(':') # range selection
         if (len(bounds) == 2):
             output += range(int(bounds[0]), int(bounds[1]) + 1)
         else:
@@ -52,25 +51,30 @@ def checkValidRange(string0):
     else:
         return string0
 
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
 
 parser.add_argument('-v', action='store_true', help='show full paths of files')
 
 group1 = parser.add_mutually_exclusive_group()
-group1.add_argument('REF', metavar='REF', type=checkValidRef, nargs='?',
-                    help='an integer for the accumulator')
-group1.add_argument('-a', type=checkValidRange, metavar='REF', dest='add', help=('eq to ' + Colors.colorize('git add ', Colors.GREEN) 
+group1.add_argument('REF', metavar='REF_INT', type=checkValidRef, nargs='?',
+                    help='output the file path of a referenced file; can be used for input into other programs')
+group1.add_argument('-a', type=checkValidRange, metavar='REF_RANGE', dest='add', help=('eq to ' + Colors.colorize('git add ', Colors.GREEN) 
                     + Colors.colorize('<file>', Colors.RED)))
-group1.add_argument('-c', type=checkValidRange, metavar='REF', dest='checkout', help=('eq to ' + Colors.colorize('git checkout HEAD ', Colors.GREEN) 
+group1.add_argument('-c', type=checkValidRange, metavar='REF_RANGE', dest='checkout', help=('eq to ' + Colors.colorize('git checkout HEAD ', Colors.GREEN) 
                     + Colors.colorize('<file>', Colors.RED)))
-group1.add_argument('-d', type=checkValidRef, metavar='REF', dest='diff', help=('eq to ' + Colors.colorize('git diff HEAD ', Colors.GREEN) 
+group1.add_argument('-d', type=checkValidRef, metavar='REF_INT', dest='diff', help=('eq to ' + Colors.colorize('git diff HEAD ', Colors.GREEN) 
                     + Colors.colorize('<file>', Colors.RED)))
-group1.add_argument('-D', type=checkValidRange, metavar='REF', dest='delete', help=('eq to ' + Colors.colorize('rm ', Colors.GREEN) 
+group1.add_argument('-D', type=checkValidRange, metavar='REF_RANGE', dest='delete', help=('eq to ' + Colors.colorize('rm ', Colors.GREEN) 
                     + Colors.colorize('<file>', Colors.RED)))
-group1.add_argument('-e', type=checkValidRef, metavar='REF', dest='edit', help=('eq to ' + Colors.colorize('vim ', Colors.GREEN) 
+group1.add_argument('-e', type=checkValidRef, metavar='REF_INT', dest='edit', help=('eq to ' + Colors.colorize('vim ', Colors.GREEN) 
                     + Colors.colorize('<file>', Colors.RED)))
-group1.add_argument('-r', type=checkValidRange, metavar='REF', dest='reset', help=('eq to ' + Colors.colorize('git reset HEAD ', Colors.GREEN) 
+group1.add_argument('-r', type=checkValidRange, metavar='REF_RANGE', dest='reset', help=('eq to ' + Colors.colorize('git reset HEAD ', Colors.GREEN) 
                     + Colors.colorize('<file>', Colors.RED)))
+parser.epilog = '''
+REF_INT   - accepts an integer for a file reference as referenced in {} default display
+REF_RANGE - accepts an integer, a comma separated list, and/or a range in the form 'x:y'
+            where x is the start index and y is the end index (inclusive)'''.format(parser.prog)
+
 args = parser.parse_args()
 
 gitFlagDecode = {
