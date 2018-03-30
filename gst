@@ -10,10 +10,14 @@ def bash(command):
         commandArray = command.split()
     proc = subprocess.Popen(commandArray, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
     (output, err) = proc.communicate()
-    return output
+    return (output, err)
 
 def GenerateList():
-    output = bash('git status -s').decode('utf-8')
+    (output, err) = bash('git status -s')
+    if (len(err) != 0):
+        raise Exception(err.decode('utf-8'))
+    output = output.decode('utf-8')
+    # print(err)
     lines = output.split('\n')
     # Iterate through git status text
     statusList = []
@@ -84,7 +88,11 @@ gitFlagDecode = {
         }
 
 def displayList():
-    statusList = GenerateList()
+    try:
+        statusList = GenerateList()
+    except Exception as e:
+        print(e)
+        return
     header = Colors.colorize('#   INDEX     CUR_TREE  FILE', Colors.YELLOW)
     print(header)
     for (index, item) in enumerate(statusList):
