@@ -3,6 +3,7 @@ import argparse                                 # parse arguments
 import os, subprocess                           # run bash commands
 from colors import *
 
+itemCount = 0
 def bash(command):
     if ('list' in str(type(command))):
         commandArray = command
@@ -13,6 +14,7 @@ def bash(command):
     return (output, err)
 
 def GenerateList():
+    global itemCount
     (output, err) = bash('git status -s')
     if (len(err) != 0):
         raise Exception(err.decode('utf-8'))
@@ -23,6 +25,7 @@ def GenerateList():
     for line in lines:
         if (line != ''):
             statusList.append({'mod': line[0:2], 'filePath': line[3:]})
+    itemCount = len(statusList) - 1
     return statusList
 
 def checkValidRef(num):
@@ -37,9 +40,12 @@ def parseRange(string0):
     parts = string0.split(',') # individual
     for part in parts:
         bounds = part.split(':') # range selection
-        if (len(bounds) == 2):
-            output += range(int(bounds[0]), int(bounds[1]) + 1)
-        else:
+        if (len(bounds) == 2): # defined range
+            if (bounds[1] == ''): # unbounded range
+                output += range(int(bounds[0]), itemCount + 1) 
+            else: # bounded range
+                output += range(int(bounds[0]), int(bounds[1]) + 1)
+        else: # single int
             output.append(int(part))
     return output
 
