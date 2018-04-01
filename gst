@@ -140,7 +140,24 @@ elif (args.checkout != None):
 elif (args.diff != None):
     statusList = GenerateList()
     (output, err) = bash('git diff HEAD {}'.format(statusList[int(args.diff)]['filePath']))
-    print(output.decode('utf-8'))
+    output = output.decode('utf-8').split('\n')
+    count = 0
+    for (index, line) in enumerate(output):
+        try:
+            if (line[0] == '-'):
+                output[index] = Colors.RED + line + Colors.OFF
+            elif (line[0] == '+'):
+                output[index] = Colors.GREEN + line + Colors.OFF
+            elif (line[0:2] == '@@'):
+                k = line.rfind('@')
+                output[index] = Colors.BLUE + output[index][:k + 1] + Colors.OFF + output[index][k + 1:] 
+            elif (line[0:10] == 'diff --git'):
+                output[index] = Colors.WHITE + line
+                output[index+2] = Colors.WHITE + output[index+2]
+                output[index+3] = Colors.WHITE + output[index+3] + Colors.OFF
+        except IndexError as e:
+            pass
+    print('\n'.join(output))
 # Delete file
 elif (args.delete != None):
     statusList = GenerateList()
