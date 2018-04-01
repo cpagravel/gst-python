@@ -139,8 +139,8 @@ elif (args.checkout != None):
 # Show diff
 elif (args.diff != None):
     statusList = GenerateList()
-    bash('git diff HEAD {}'.format(statusList[int(args.diff)]['filePath']))
-    displayList()
+    (output, err) = bash('git diff HEAD {}'.format(statusList[int(args.diff)]['filePath']))
+    print(output.decode('utf-8'))
 # Delete file
 elif (args.delete != None):
     statusList = GenerateList()
