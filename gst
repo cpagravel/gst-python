@@ -57,6 +57,26 @@ def checkValidRange(string0):
     else:
         return string0
 
+# credit: https://stackoverflow.com/questions/3305287/python-how-do-you-view-output-that-doesnt-fit-the-screen
+# slight modification
+class Less(object):
+    def __init__(self, num_lines=40):
+        self.num_lines = num_lines
+    def __ror__(self, msg):
+        if (len(msg.split('\n')) <= self.num_lines):
+            print(msg)
+        else:
+            with subprocess.Popen(["less", "-R"], stdin=subprocess.PIPE) as less:
+                try:
+                    less.stdin.write(msg.encode("utf-8"))
+                    less.stdin.close()
+                    less.wait()
+                except KeyboardInterrupt:
+                    less.kill()
+                    bash('stty echo')
+
+less = Less(50)
+
 parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
 
 parser.add_argument('-v', action='store_true', help='show full paths of files')
@@ -157,7 +177,8 @@ elif (args.diff != None):
                 output[index+3] = Colors.WHITE + output[index+3] + Colors.OFF
         except IndexError as e:
             pass
-    print('\n'.join(output))
+    '\n'.join(output) | less            
+    # print('\n'.join(output))
 # Delete file
 elif (args.delete != None):
     statusList = GenerateList()
