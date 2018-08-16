@@ -54,9 +54,7 @@ def parseRange(string0):
     return output
 
 def checkValidRange(string0):
-    print("checkValidRange")
     values = parseRange(string0)
-    print("checkValidRange2")
     for value in values:
         if (value < 0):
             argparse.ArgumentTypeError("%s is an invalid positive int value" % value)
