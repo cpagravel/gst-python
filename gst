@@ -6,7 +6,7 @@ from colors import *
 itemCount = 0
 def bash(command):
     if ('list' in str(type(command))):
-        commandArray = command
+        commandArray = [cmd.replace('"', '') for cmd in command]
     else:
         commandArray = command.split()
     proc = subprocess.Popen(commandArray, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
@@ -75,7 +75,7 @@ class Less(object):
                     less.kill()
                     bash('stty echo')
 
-less = Less(50)
+less = Less(20)
 
 parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
 
@@ -140,26 +140,29 @@ if (args.REF != None):
     print(statusList[int(args.REF)]['filePath'])
 # Add file to repo
 elif (args.add != None):
+    cmds = ['git', 'add']
     statusList = GenerateList()
     inputRange = parseRange(args.add)
-    fileList = ''
-    for value in inputRange:
-        fileList += statusList[value]['filePath'] + ' '
-    bash('git add {}'.format(fileList[:-1]))
+    fileList = [statusList[x]['filePath'] for x in inputRange]
+    cmds.extend(fileList)
+    bash(cmds)
     displayList()
 # Checkout file
 elif (args.checkout != None):
+    cmds = ['git', 'checkout', 'HEAD']
     statusList = GenerateList()
     inputRange = parseRange(args.checkout)
-    fileList = ''
-    for value in inputRange:
-        fileList += statusList[value]['filePath'] + ' '
-    bash('git checkout HEAD {}'.format(fileList[:-1]))
+    fileList = [statusList[x]['filePath'] for x in inputRange]
+    cmds.extend(fileList)
+    bash(cmds)
     displayList()
 # Show diff
 elif (args.diff != None):
+    cmds = ['git', 'diff', 'HEAD']
     statusList = GenerateList()
-    (output, err) = bash('git diff HEAD {}'.format(statusList[int(args.diff)]['filePath']))
+    cmds.append(statusList[int(args.diff)]['filePath'])
+    (output, err) = bash(cmds)
+    # (output, err) = bash('git diff HEAD {}'.format(statusList[int(args.diff)]['filePath']))
     output = output.decode('utf-8').split('\n')
     count = 0
     for (index, line) in enumerate(output):
@@ -177,31 +180,32 @@ elif (args.diff != None):
                 output[index+3] = Colors.WHITE + output[index+3] + Colors.OFF
         except IndexError as e:
             pass
-    '\n'.join(output) | less            
+    '\n'.join(output) | less
     # print('\n'.join(output))
 # Delete file
 elif (args.delete != None):
+    cmds = ['rm', '-r']
     statusList = GenerateList()
     inputRange = parseRange(args.delete)
-    fileList = ''
-    for value in inputRange:
-        fileList += statusList[value]['filePath'] + ' '
-    commandArray = ['rm', '-r', '{}'.format(fileList[:-1])]
-    bash(commandArray)
+    fileList = [statusList[x]['filePath'] for x in inputRange]
+    cmds.extend(fileList)
+    bash(cmds)
     displayList()
 # Edit file
 elif (args.edit != None):
+    cmds = ['vim']
     statusList = GenerateList()
-    bash('vim {}'.format(statusList[int(args.edit)]['filePath']))
+    cmds.append(statusList[int(args.edit)]['filePath'])
+    bash(cmds)
     displayList()
 # Reset file
 elif (args.reset != None):
+    cmds = ['git', 'reset', 'HEAD']
     statusList = GenerateList()
     inputRange = parseRange(args.reset)
-    fileList = ''
-    for value in inputRange:
-        fileList += statusList[value]['filePath'] + ' '
-    bash('git reset HEAD {}'.format(fileList[:-1]))
+    fileList = [statusList[x]['filePath'] for x in inputRange]
+    cmds.extend(fileList)
+    bash(cmds)
     displayList()
 else:
     # Display list
