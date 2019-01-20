@@ -36,17 +36,21 @@ def checkValidRef(num):
         return num
 
 def parseRange(string0):
-    output = []
-    parts = string0.split(',') # individual
-    for part in parts:
-        bounds = part.split(':') # range selection
-        if (len(bounds) == 2): # defined range
-            if (bounds[1] == ''): # unbounded range
-                output += range(int(bounds[0]), itemCount + 1) 
-            else: # bounded range
-                output += range(int(bounds[0]), int(bounds[1]) + 1)
-        else: # single int
-            output.append(int(part))
+    try:
+        output = []
+        parts = string0.split(',') # individual
+        for part in parts:
+            bounds = part.split(':') # range selection
+            if (len(bounds) == 2): # defined range
+                if (bounds[1] == ''): # unbounded range
+                    output += range(int(bounds[0]), itemCount + 1) 
+                else: # bounded range
+                    output += range(int(bounds[0]), int(bounds[1]) + 1)
+            else: # single int
+                output.append(int(part))
+    except ValueError as e:
+        print(Colors.colorize("ValueError\n", Colors.RED) + parser.epilog)
+        exit()
     return output
 
 def checkValidRange(string0):
@@ -97,9 +101,14 @@ group1.add_argument('-e', type=checkValidRef, metavar='REF_INT', dest='edit', he
 group1.add_argument('-r', type=checkValidRange, metavar='REF_RANGE', dest='reset', help=('eq to ' + Colors.colorize('git reset HEAD ', Colors.GREEN) 
                     + Colors.colorize('<file>', Colors.RED)))
 parser.epilog = '''
-REF_INT   - accepts an integer for a file reference as referenced in {} default display
-REF_RANGE - accepts an integer, a comma separated list, and/or a range in the form 'x:y'
-            where x is the start index and y is the end index (inclusive)'''.format(parser.prog)
+{1}   - accepts an {3} for a file reference as referenced in {0} default display
+{2} - accepts an {3}, a {4}, and/or a range in the form {5}
+            where x is the start index and y is the end index (inclusive)'''.format(parser.prog,
+                                                                                    Colors.colorize('REF_INT', Colors.RESET),
+                                                                                    Colors.colorize('REF_RANGE', Colors.RESET),
+                                                                                    Colors.colorize('integer', Colors.BOLD),
+                                                                                    Colors.colorize('comma separated list', Colors.BOLD),
+                                                                                    Colors.colorize('x:y', Colors.BOLD))
 
 args = parser.parse_args()
 
@@ -202,6 +211,7 @@ elif (args.edit != None):
 elif (args.reset != None):
     cmds = ['git', 'reset', 'HEAD']
     statusList = GenerateList()
+    print("HERE")
     inputRange = parseRange(args.reset)
     fileList = [statusList[x]['filePath'] for x in inputRange]
     cmds.extend(fileList)
