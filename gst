@@ -1,72 +1,94 @@
 #! /usr/bin/env python3
-import argparse                                 # parse arguments
-import os, subprocess                           # run bash commands
-from colors import *
+import argparse
+import logging
+import os
+import subprocess
+import sys
 
-itemCount = 0
-def bash(command):
+from typing import Union, List
+
+LOGGER = logging.getLogger(__name__)
+
+class Colors(object):
+    BLUE        = '\033[1;34m'
+    BOLD        = '\033[;1m'
+    CYAN        = '\033[1;36m'
+    GREEN       = '\033[1;32m'
+    OFF         = '\033[1;;m'
+    PURPLE      = '\033[1;35m'
+    RED         = '\033[1;31m'
+    RESET       = '\033[0;0m'
+    REVERSE     = '\033[;7m'
+    WHITE       = '\033[1;37m'
+    YELLOW      = '\033[1;33m'
+
+    @staticmethod
+    def colorize(text, color):
+        return color + str(text) + Colors.OFF
+
+def bash(command: Union[List[str], str]):
     if ('list' in str(type(command))):
-        commandArray = [cmd.replace('"', '') for cmd in command]
+        command_array = [cmd.replace('"', '') for cmd in command]
     else:
-        commandArray = command.split()
-    proc = subprocess.Popen(commandArray, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
+        command_array = command.split()
+    LOGGER.debug('Bash: %s', ' '.join(command_array))
+    proc = subprocess.Popen(command_array, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
     (output, err) = proc.communicate()
     return (output, err)
 
-def GenerateList():
-    global itemCount
+def generateStatusList():
     (output, err) = bash('git status -s')
     if (len(err) != 0):
         raise Exception(err.decode('utf-8'))
     output = output.decode('utf-8')
     lines = output.split('\n')
     # Iterate through git status text
-    statusList = []
+    status_list = []
     for line in lines:
         if (line != ''):
-            statusList.append({'mod': line[0:2], 'filePath': line[3:]})
-    itemCount = len(statusList) - 1
-    return statusList
+            status_list.append({'mod': line[0:2], 'filePath': line[3:]})
+    item_count = len(status_list) - 1
+    return (status_list, item_count)
 
-def checkValidRef(num):
+def checkValidRef(num: Union[str, int]) -> int:
     num = int(num)
     if num < 0:
-         raise argparse.ArgumentTypeError("%s is an invalid positive int value" % num)
-    else:
-        return num
+        raise argparse.ArgumentTypeError("%s is an invalid positive int value" % num)
+    elif num > item_count:
+        raise argparse.ArgumentTypeError("%s is an out of range" % num)
+    return num
 
-def parseRange(string0):
+def parseRange(range_string: str) -> List[int]:
     try:
         output = []
-        parts = string0.split(',') # individual
+        parts = range_string.split(',') # singles
         for part in parts:
             bounds = part.split(':') # range selection
             if (len(bounds) == 2): # defined range
                 if (bounds[1] == ''): # unbounded range
-                    output += range(int(bounds[0]), itemCount + 1) 
+                    output += range(int(bounds[0]), item_count + 1) 
                 else: # bounded range
                     output += range(int(bounds[0]), int(bounds[1]) + 1)
             else: # single int
                 output.append(int(part))
     except ValueError as e:
         print(Colors.colorize("ValueError\n", Colors.RED) + parser.epilog)
-        exit()
+        exit(1)
     return output
 
-def checkValidRange(string0):
-    values = parseRange(string0)
+def checkValidRange(range_string: str) -> str:
+    values = parseRange(range_string)
     for value in values:
-        if (value < 0):
-            argparse.ArgumentTypeError("%s is an invalid positive int value" % value)
+        checkValidRef(value)
     else:
-        return string0
+        return range_string
 
 # credit: https://stackoverflow.com/questions/3305287/python-how-do-you-view-output-that-doesnt-fit-the-screen
 # slight modification
 class Less(object):
-    def __init__(self, num_lines=40):
+    def __init__(self, num_lines: int=40):
         self.num_lines = num_lines
-    def __ror__(self, msg):
+    def __ror__(self, msg: str):
         if (len(msg.split('\n')) <= self.num_lines):
             print(msg)
         else:
@@ -79,11 +101,21 @@ class Less(object):
                     less.kill()
                     bash('stty echo')
 
+######################
+# Generate Status List
+######################
+try:
+    status_list, item_count = generateStatusList()
+except Exception as e:
+    print(e)
+    exit(1)
+
 less = Less(20)
 
 parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
 
 parser.add_argument('-v', action='store_true', help='show full paths of files')
+parser.add_argument('--debug', action='store_true', help='show bash commands')
 
 group1 = parser.add_mutually_exclusive_group()
 group1.add_argument('REF', metavar='REF_INT', type=checkValidRef, nargs='?',
@@ -95,8 +127,6 @@ group1.add_argument('-c', type=checkValidRange, metavar='REF_RANGE', dest='check
 group1.add_argument('-d', type=checkValidRef, metavar='REF_INT', dest='diff', help=('eq to ' + Colors.colorize('git diff HEAD ', Colors.GREEN) 
                     + Colors.colorize('<file>', Colors.RED)))
 group1.add_argument('-D', type=checkValidRange, metavar='REF_RANGE', dest='delete', help=('eq to ' + Colors.colorize('rm ', Colors.GREEN) 
-                    + Colors.colorize('<file>', Colors.RED)))
-group1.add_argument('-e', type=checkValidRef, metavar='REF_INT', dest='edit', help=('eq to ' + Colors.colorize('vim ', Colors.GREEN) 
                     + Colors.colorize('<file>', Colors.RED)))
 group1.add_argument('-r', type=checkValidRange, metavar='REF_RANGE', dest='reset', help=('eq to ' + Colors.colorize('git reset HEAD ', Colors.GREEN) 
                     + Colors.colorize('<file>', Colors.RED)))
@@ -112,66 +142,63 @@ parser.epilog = '''
 
 args = parser.parse_args()
 
-gitFlagDecode = {
-          'M': "Modified",
-          'A': "Added   ",
-          'D': "Deleted ",
-          'R': "Renamed ",
-          'C': "Copied  ",
-          'U': "Unmerged",
-          'T': "TypeChg ",
-          '?': "Untrackd",
-          '!': "Ignored ",
-          'm': "Sub Mod ",
-          ' ': "        "
-        }
+# Debug
+if args.debug:
+    sh = logging.StreamHandler(sys.stdout)
+    LOGGER.addHandler(sh)
+    LOGGER.setLevel(logging.DEBUG)
+
+git_flag_decode = {
+        'M': "Modified",
+        'A': "Added   ",
+        'D': "Deleted ",
+        'R': "Renamed ",
+        'C': "Copied  ",
+        'U': "Unmerged",
+        'T': "TypeChg ",
+        '?': "Untrackd",
+        '!': "Ignored ",
+        'm': "Sub Mod ",
+        ' ': "        "
+}
 
 def displayList():
-    try:
-        statusList = GenerateList()
-    except Exception as e:
-        print(e)
-        return
+    status_list, _ = generateStatusList()
     header = Colors.colorize('#   INDEX     CUR_TREE  FILE', Colors.YELLOW)
     print(header)
-    for (index, item) in enumerate(statusList):
+    for (index, item) in enumerate(status_list):
         path = item['filePath']
         if (not args.v):
             path = os.path.basename(path[:-1]) + path[-1]
         index = Colors.colorize(index, Colors.PURPLE)
-        indexStatus = Colors.colorize(gitFlagDecode[item['mod'][0]], Colors.GREEN)
-        treeStats = Colors.colorize(gitFlagDecode[item['mod'][1]], Colors.RED)
-        print('{:<16} {:<21}  {:<21}  {} ({})'.format(index, indexStatus, treeStats, path, index))
+        index_status = Colors.colorize(git_flag_decode[item['mod'][0]], Colors.GREEN)
+        tree_stats = Colors.colorize(git_flag_decode[item['mod'][1]], Colors.RED)
+        print('{:<16} {:<21}  {:<21}  {} ({})'.format(index, index_status, tree_stats, path, index))
 
 # Print path
 if (args.REF != None):
-    statusList = GenerateList()
-    print(statusList[int(args.REF)]['filePath'])
+    print(status_list[int(args.REF)]['filePath'])
 # Add file to repo
 elif (args.add != None):
     cmds = ['git', 'add']
-    statusList = GenerateList()
-    inputRange = parseRange(args.add)
-    fileList = [statusList[x]['filePath'] for x in inputRange]
-    cmds.extend(fileList)
+    input_range = parseRange(args.add)
+    file_list = [status_list[x]['filePath'] for x in input_range]
+    cmds.extend(file_list)
     bash(cmds)
     displayList()
 # Checkout file
 elif (args.checkout != None):
     cmds = ['git', 'checkout', 'HEAD']
-    statusList = GenerateList()
-    inputRange = parseRange(args.checkout)
-    fileList = [statusList[x]['filePath'] for x in inputRange]
-    cmds.extend(fileList)
+    input_range = parseRange(args.checkout)
+    file_list = [status_list[x]['filePath'] for x in input_range]
+    cmds.extend(file_list)
     bash(cmds)
     displayList()
 # Show diff
 elif (args.diff != None):
     cmds = ['git', 'diff', 'HEAD']
-    statusList = GenerateList()
-    cmds.append(statusList[int(args.diff)]['filePath'])
+    cmds.append(status_list[int(args.diff)]['filePath'])
     (output, err) = bash(cmds)
-    # (output, err) = bash('git diff HEAD {}'.format(statusList[int(args.diff)]['filePath']))
     output = output.decode('utf-8').split('\n')
     count = 0
     for (index, line) in enumerate(output):
@@ -190,31 +217,20 @@ elif (args.diff != None):
         except IndexError as e:
             pass
     '\n'.join(output) | less
-    # print('\n'.join(output))
 # Delete file
 elif (args.delete != None):
     cmds = ['rm', '-r']
-    statusList = GenerateList()
-    inputRange = parseRange(args.delete)
-    fileList = [statusList[x]['filePath'] for x in inputRange]
-    cmds.extend(fileList)
-    bash(cmds)
-    displayList()
-# Edit file
-elif (args.edit != None):
-    cmds = ['vim']
-    statusList = GenerateList()
-    cmds.append(statusList[int(args.edit)]['filePath'])
+    input_range = parseRange(args.delete)
+    file_list = [status_list[x]['filePath'] for x in input_range]
+    cmds.extend(file_list)
     bash(cmds)
     displayList()
 # Reset file
 elif (args.reset != None):
     cmds = ['git', 'reset', 'HEAD']
-    statusList = GenerateList()
-    print("HERE")
-    inputRange = parseRange(args.reset)
-    fileList = [statusList[x]['filePath'] for x in inputRange]
-    cmds.extend(fileList)
+    input_range = parseRange(args.reset)
+    file_list = [status_list[x]['filePath'] for x in input_range]
+    cmds.extend(file_list)
     bash(cmds)
     displayList()
 else:

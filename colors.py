@@ -1,3 +1,4 @@
+# Not used directly, but kept for reference
 class Colors(object):
     BLUE        = '\033[1;34m'
     BOLD        = '\033[;1m'
