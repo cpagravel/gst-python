@@ -46,7 +46,8 @@ def generateStatusList():
     status_list = []
     for line in lines:
         if (line != ''):
-            status_list.append({'mod': line[0:2], 'filePath': line[3:]})
+            file_path = line[3:].split(' -> ')[-1]  # handle renamed case
+            status_list.append({'mod': line[0:2], 'filePath': file_path})
     item_count = len(status_list) - 1
     return (status_list, item_count)
 
