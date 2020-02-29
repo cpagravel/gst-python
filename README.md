@@ -50,7 +50,7 @@ Download the gst file, make it executable and place it in the PATH. The followin
 ```
 RCFILE="$HOME/.bashrc" # Or .bash_profile for Macs
 BINDIR="$HOME/bin"
-mkdir -p $BINDIR; cd $BINDIR # directory where you want to keep cdb
+mkdir -p $BINDIR; cd $BINDIR # directory where you want to keep gst
 curl -O https://raw.githubusercontent.com/cpagravel/gst-python/master/gst
 chmod +x gst
 echo "if ! [[ \$PATH =~ \"$BINDIR\" ]]; then export PATH=\"\$PATH:$BINDIR\"; fi" >> $RCFILE
