@@ -66,7 +66,7 @@ def parseRange(range_string: str) -> List[int]:
             bounds = part.split(':') # range selection
             if (len(bounds) == 2): # defined range
                 if (bounds[1] == ''): # unbounded range
-                    output += range(int(bounds[0]), item_count + 1) 
+                    output += range(int(bounds[0]), item_count + 1)
                 else: # bounded range
                     output += range(int(bounds[0]), int(bounds[1]) + 1)
             else: # single int
@@ -120,15 +120,15 @@ parser.add_argument('--debug', action='store_true', help='show bash commands')
 group1 = parser.add_mutually_exclusive_group()
 group1.add_argument('REF', metavar='REF_INT', type=checkValidRef, nargs='?',
                     help='output the file path of a referenced file; can be used for input into other programs')
-group1.add_argument('-a', type=checkValidRange, metavar='REF_RANGE', dest='add', help=('eq to ' + Colors.colorize('git add ', Colors.GREEN) 
+group1.add_argument('-a', type=checkValidRange, metavar='REF_RANGE', dest='add', help=('eq to ' + Colors.colorize('git add ', Colors.GREEN)
                     + Colors.colorize('<file>', Colors.RED)))
-group1.add_argument('-c', type=checkValidRange, metavar='REF_RANGE', dest='checkout', help=('eq to ' + Colors.colorize('git checkout HEAD ', Colors.GREEN) 
+group1.add_argument('-c', type=checkValidRange, metavar='REF_RANGE', dest='checkout', help=('eq to ' + Colors.colorize('git checkout HEAD ', Colors.GREEN)
                     + Colors.colorize('<file>', Colors.RED)))
-group1.add_argument('-d', type=checkValidRef, metavar='REF_INT', dest='diff', help=('eq to ' + Colors.colorize('git diff HEAD ', Colors.GREEN) 
+group1.add_argument('-d', type=checkValidRef, metavar='REF_INT', dest='diff', help=('eq to ' + Colors.colorize('git diff HEAD ', Colors.GREEN)
                     + Colors.colorize('<file>', Colors.RED)))
-group1.add_argument('-D', type=checkValidRange, metavar='REF_RANGE', dest='delete', help=('eq to ' + Colors.colorize('rm ', Colors.GREEN) 
+group1.add_argument('-D', type=checkValidRange, metavar='REF_RANGE', dest='delete', help=('eq to ' + Colors.colorize('rm ', Colors.GREEN)
                     + Colors.colorize('<file>', Colors.RED)))
-group1.add_argument('-r', type=checkValidRange, metavar='REF_RANGE', dest='reset', help=('eq to ' + Colors.colorize('git reset HEAD ', Colors.GREEN) 
+group1.add_argument('-r', type=checkValidRange, metavar='REF_RANGE', dest='reset', help=('eq to ' + Colors.colorize('git reset HEAD ', Colors.GREEN)
                     + Colors.colorize('<file>', Colors.RED)))
 parser.epilog = '''
 {1}   - accepts an {3} for a file reference as referenced in {0} default display
@@ -209,7 +209,7 @@ elif (args.diff != None):
                 output[index] = Colors.GREEN + line + Colors.OFF
             elif (line[0:2] == '@@'):
                 k = line.rfind('@')
-                output[index] = Colors.BLUE + output[index][:k + 1] + Colors.OFF + output[index][k + 1:] 
+                output[index] = Colors.BLUE + output[index][:k + 1] + Colors.OFF + output[index][k + 1:]
             elif (line[0:10] == 'diff --git'):
                 output[index] = Colors.WHITE + line
                 output[index+2] = Colors.WHITE + output[index+2]
