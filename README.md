@@ -46,20 +46,19 @@ $ gst -D 1 # delete a file
 ```
 
 ## Installation
-Download the gst file, make it executable and place it in the PATH. The following commands will do this for you.
+Install from pip.
 ```
-RCFILE="$HOME/.bashrc" # Or .bash_profile for Macs
-BINDIR="$HOME/bin"
-mkdir -p $BINDIR; cd $BINDIR # directory where you want to keep gst
-curl -O https://raw.githubusercontent.com/cpagravel/gst-python/master/gst
-chmod +x gst
-echo "if ! [[ \$PATH =~ \"$BINDIR\" ]]; then export PATH=\"\$PATH:$BINDIR\"; fi" >> $RCFILE
+pip install gst
 ```
 
 ## Compatability
-- Linux distro
+- Linux, Mac, Windows
 - Git version >2
 - Python3 (re: https://pythonclock.org/)
+
+## TODO
+- Use a class and get rid of globals (parser, item_count)
+- Upload pictures to show colored text (or wish harder for github to support it)
 
 ## License MIT
 [View project License](LICENSE.md).
