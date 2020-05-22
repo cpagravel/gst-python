@@ -8,6 +8,10 @@ import sys
 from typing import Union, List
 
 LOGGER = logging.getLogger(__name__)
+sh = logging.StreamHandler(sys.stdout)
+LOGGER.addHandler(sh)
+LOGGER.setLevel(logging.INFO)
+LOGGER.propagate = False
 
 class Colors(object):
     BLUE        = '\033[1;34m'
@@ -73,7 +77,7 @@ def parseRange(range_string: str) -> List[int]:
             else: # single int
                 output.append(int(part))
     except ValueError as e:
-        print(Colors.colorize("ValueError\n", Colors.RED) + parser.epilog)
+        LOGGER.info(Colors.colorize("ValueError\n", Colors.RED) + parser.epilog)
         exit(1)
     return output
 
@@ -91,7 +95,7 @@ class Less(object):
         self.num_lines = num_lines
     def __ror__(self, msg: str):
         if (len(msg.split('\n')) <= self.num_lines):
-            print(msg)
+            LOGGER.info(msg)
         else:
             with subprocess.Popen(["less", "-R"], stdin=subprocess.PIPE) as less:
                 try:
@@ -108,7 +112,7 @@ class Less(object):
 try:
     status_list, item_count = generateStatusList()
 except Exception as e:
-    print(e)
+    LOGGER.info(e)
     exit(1)
 
 less = Less(20)
@@ -145,8 +149,6 @@ args = parser.parse_args()
 
 # Debug
 if args.debug:
-    sh = logging.StreamHandler(sys.stdout)
-    LOGGER.addHandler(sh)
     LOGGER.setLevel(logging.DEBUG)
 
 git_flag_decode = {
@@ -166,7 +168,7 @@ git_flag_decode = {
 def displayList():
     status_list, _ = generateStatusList()
     header = Colors.colorize('#   INDEX     CUR_TREE  FILE', Colors.YELLOW)
-    print(header)
+    LOGGER.info(header)
     for (index, item) in enumerate(status_list):
         path = item['filePath']
         if (not args.v):
@@ -174,11 +176,11 @@ def displayList():
         index = Colors.colorize(index, Colors.PURPLE)
         index_status = Colors.colorize(git_flag_decode[item['mod'][0]], Colors.GREEN)
         tree_stats = Colors.colorize(git_flag_decode[item['mod'][1]], Colors.RED)
-        print('{:<16} {:<21}  {:<21}  {} ({})'.format(index, index_status, tree_stats, path, index))
+        LOGGER.info('{:<16} {:<21}  {:<21}  {} ({})'.format(index, index_status, tree_stats, path, index))
 
-# Print path
+# Print path if reference given
 if (args.REF != None):
-    print(status_list[int(args.REF)]['filePath'])
+    LOGGER.info(status_list[int(args.REF)]['filePath'])
 # Add file to repo
 elif (args.add != None):
     cmds = ['git', 'add']

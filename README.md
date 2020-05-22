@@ -1,11 +1,11 @@
 # gst [![MIT License][license-badge]](LICENSE.md)
 
 ## Synposis
-gst is short for **G**it **St**atus - it's a commandline app with some neat features for improving your workflow
+gst is short for **G**it **St**atus - it's a commandline app with some neat features for improving your workflow with git
 Note that gst is meant for in dark themed terminals
 
 ## Usage
-Note that the output is colorized in the terminal. It doesn't show here, and I didn't wanna bother taking pictures to show you. It's really lovely (with a dark themed terminal).
+Note that the output is colorized in the terminal and intended for a dark themed terminal. It doesn't show here - waiting for colorized text in Github markdown (re: https://github.com/github/markup/issues/369).
 ```
 $ gst # Show status of repository
 #   INDEX     CUR_TREE  FILE
