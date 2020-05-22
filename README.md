@@ -57,9 +57,13 @@ echo "if ! [[ \$PATH =~ \"$BINDIR\" ]]; then export PATH=\"\$PATH:$BINDIR\"; fi"
 ```
 
 ## Compatability
-- Linux distro
+- Linux, Mac, Windows
 - Git version >2
 - Python3 (re: https://pythonclock.org/)
+
+## TODO
+- Use a class and get rid of globals (parser, item_count)
+- Upload pictures to show colored text (or wish harder for github to support it)
 
 ## License MIT
 [View project License](LICENSE.md).
