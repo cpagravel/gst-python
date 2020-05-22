@@ -208,7 +208,7 @@ def main():
     elif (args.diff != None):
         cmds = ['git', 'diff', 'HEAD']
         cmds.append(status_list[int(args.diff)]['filePath'])
-        (output, err) = bash(cmds)
+        (output, _) = bash(cmds)
         output = output.decode('utf-8').split('\n')
         for (index, line) in enumerate(output):
             try:
