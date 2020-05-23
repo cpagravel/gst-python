@@ -46,7 +46,7 @@ def generateStatusList():
     global ITEM_COUNT
     (output, err) = bash("git status -s")
     if (len(err) != 0):
-        raise Exception(err.decode("utf-8"))
+        raise RuntimeError(err.decode("utf-8"))
     output = output.decode("utf-8")
     lines = output.split("\n")
     # Iterate through git status text
@@ -118,7 +118,7 @@ def main():
     global parser
     try:
         status_list, ITEM_COUNT = generateStatusList()
-    except Exception as e:
+    except RuntimeError as e:
         LOGGER.info(e)
         exit(1)
 
