@@ -192,9 +192,18 @@ def main():
     elif (args.add != None):
         cmds = ["git", "add"]
         input_range = parseRange(args.add)
-        file_list = [status_list[x]["filePath"] for x in input_range]
-        cmds.extend(file_list)
-        bash(cmds)
+        # Split for deleted items. Git does not like handling both in the git add calls.
+        file_list_non_deleted = [
+            status_list[x]["filePath"] for x in input_range if status_list[x]["mod"][1] != "D"]
+        file_list_deleted = [
+            status_list[x]["filePath"] for x in input_range if status_list[x]["mod"][1] == "D"]
+        non_deleted_cmd = cmds.copy()
+        non_deleted_cmd.extend(file_list_non_deleted)
+
+        deleted_cmd = cmds.copy()
+        deleted_cmd.extend(file_list_deleted)
+        bash(non_deleted_cmd)
+        bash(deleted_cmd)
         displayList()
     # Checkout file
     elif (args.checkout != None):
