@@ -113,6 +113,19 @@ class Less(object):
                     less.kill()
                     bash("stty echo")
 
+def open_in_editor(file_path: str) -> None:
+    """Open a file in the default editor"""
+    # Try to get the default editor from environment variables
+    editor = os.environ.get('VISUAL') or os.environ.get('EDITOR')
+    
+    if editor:
+        cmds = editor.split()
+        cmds.append(file_path)
+        # Run editor in foreground so it can take over the terminal
+        subprocess.run(cmds)
+    else:
+        LOGGER.info(Colors.colorize("No default editor found", Colors.YELLOW))
+
 def main() -> None:
     ######################
     # Generate Status List
@@ -143,6 +156,7 @@ def main() -> None:
                         + Colors.colorize("<file>", Colors.RED)))
     group1.add_argument("-D", type=checkValidRange, metavar="REF_RANGE", dest="delete", help=("eq to " + Colors.colorize("rm ", Colors.GREEN)
                         + Colors.colorize("<file>", Colors.RED)))
+    group1.add_argument("-e", type=checkValidRef, metavar="REF_INT", dest="edit", help=("edit file with either " + Colors.colorize("$VISUAL", Colors.GREEN) + " or " + Colors.colorize("$EDITOR ", Colors.GREEN)))
     group1.add_argument("-r", type=checkValidRange, metavar="REF_RANGE", dest="reset", help=("eq to " + Colors.colorize("git reset HEAD ", Colors.GREEN)
                         + Colors.colorize("<file>", Colors.RED)))
     parser.epilog = """
@@ -244,6 +258,9 @@ def main() -> None:
         cmds.extend(file_list)
         bash(cmds)
         displayList()
+    elif (args.edit != None):  # open in editor
+        file_path = status_list[int(args.edit)]["filePath"]
+        open_in_editor(file_path)
     elif (args.reset != None):  # git reset
         cmds = ["git", "reset", "HEAD"]
         input_range = parseRange(args.reset)

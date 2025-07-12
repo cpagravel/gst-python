@@ -43,6 +43,8 @@ $ gst -c 1 # checkout file to revert changes
 $ gst -D 1 # delete a file
 #   INDEX     CUR_TREE  FILE
 0   Added               LICENSE.md (0)
+
+$ gst -e 1 # open file in default editor
 ```
 
 ## Installation
