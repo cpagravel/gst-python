@@ -117,7 +117,7 @@ def open_in_editor(file_path: str) -> None:
     """Open a file in the default editor"""
     # Try to get the default editor from environment variables
     editor = os.environ.get('VISUAL') or os.environ.get('EDITOR')
-    
+
     if editor:
         cmds = editor.split()
         cmds.append(file_path)
@@ -202,7 +202,9 @@ def main() -> None:
 
         for (index, item) in enumerate(status_list):
             path = item["filePath"]
-            basename = os.path.basename(path)
+            # Using os.path.basename on a string that ends with / will return an empty string.
+            # We want to keep the trailing slash for directories, so we use os.path.normpath and append / to indicate directories.
+            basename = os.path.basename(os.path.normpath(path)) + ("/" if os.path.isdir(path) else "")
             if (not args.v) and seen[basename] < 2:
                 path = basename
             index = Colors.colorize(index, Colors.PURPLE)

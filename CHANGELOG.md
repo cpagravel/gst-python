@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.7] - 2025-07-13
+
+### Fixed
+- Fixed display of untracked folders which would show up blank without `-v` option.
+
 ## [0.1.6] - 2025-07-12
 
 ### Added

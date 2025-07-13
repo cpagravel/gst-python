@@ -3,7 +3,7 @@ import setuptools
 setuptools.setup(
     name = "gst",
     packages = {".": "gst"},
-    version = "0.1.6",
+    version = "0.1.7",
     license="MIT",
     description = "Git status tool",
     author = "Chris Gravel",
