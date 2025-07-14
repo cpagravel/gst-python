@@ -222,7 +222,7 @@ class GitStatusTool:
       tree_stats = Colors.colorize(self._git_flag_decode[item["mod"][1]], Colors.RED)
       LOGGER.info(
         "{:<16} {:<21}  {:<21}  {} ({})".format(
-          index_colored, index_status, tree_stats, path, index
+          index_colored, index_status, tree_stats, path, index_colored
         )
       )
 

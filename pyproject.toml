@@ -95,6 +95,9 @@ unfixable = []
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
+# Per-file configuration
+[tool.ruff.lint.per-file-ignores]
+"scripts/generate_svg_examples.py" = ["E501"]  # Ignore line length for SVG generation script
 
 [tool.ruff.lint.mccabe]
 # Unlike Flake8, default to a complexity level of 10.
