@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.8] - 2025-07-14
+
 ### Added
 - Add setup_dev.sh script which installs a precommit hook that uses ruff and mypy
 - Add update_pypi.sh script
