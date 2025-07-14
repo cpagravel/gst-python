@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Add setup_dev.sh script which installs a precommit hook that uses black and mypy.
+
 ## [0.1.7] - 2025-07-13
 
 ### Fixed

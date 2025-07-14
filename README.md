@@ -53,6 +53,17 @@ Install from pip.
 pip install gst
 ```
 
+## Development Setup
+To contribute to this project:
+
+1. Clone the repository
+2. Run the development setup script:
+   ```bash
+   ./scripts/setup_dev.sh
+   ```
+
+This script installs development dependencies (black, mypy) and sets up a pre-commit hook that automatically runs code formatting and type checking on each commit.
+
 ## Compatability
 - Linux, Mac, Windows
 - Git version >2
