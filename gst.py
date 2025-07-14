@@ -117,6 +117,15 @@ def check_valid_range(range_string: str, item_count: int) -> str:
   return range_string
 
 
+def get_file_basename(file_path: str) -> str:
+  """Get the basename of a file, ensuring it ends with a slash if it's a directory."""
+  # Using os.path.basename on a string that ends with / will return an
+  # empty string. We want to keep the trailing slash for directories,
+  # so we use os.path.normpath and append / to indicate directories.
+  basename = os.path.basename(os.path.normpath(file_path))
+  return basename + "/" if os.path.isdir(file_path) else basename
+
+
 class GitStatusTool:
   def __init__(self) -> None:
     self._status_list: StatusDictType = []
@@ -201,18 +210,13 @@ class GitStatusTool:
     # Count number of files that will have the same basename. This is used
     # to determine if we should display the full path.
     if len(status_list) < 150:  # We don't do this if there are too many files
-      seen = Counter([os.path.basename(item["filePath"]) for item in status_list])
+      seen = Counter([get_file_basename(item["filePath"]) for item in status_list])
     else:
       seen = Counter()
 
     for index, item in enumerate(status_list):
       path = item["filePath"]
-      # Using os.path.basename on a string that ends with / will return an
-      # empty string. We want to keep the trailing slash for directories,
-      # so we use os.path.normpath and append / to indicate directories.
-      basename = os.path.basename(os.path.normpath(path)) + (
-        "/" if os.path.isdir(path) else ""
-      )
+      basename = get_file_basename(path)
       if (not self._args.v) and seen[basename] < 2:
         path = basename
       index_colored = Colors.colorize(str(index), Colors.PURPLE)

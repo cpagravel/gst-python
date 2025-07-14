@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fixed mypy errors in gst.py
+- Fix issue where duplicate folders will not be disambiguated E.g. two folders named `__pycache__/` in different directories
 
 ## [0.1.7] - 2025-07-13
 
