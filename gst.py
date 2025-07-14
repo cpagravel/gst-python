@@ -83,6 +83,40 @@ def open_in_editor(file_path: str) -> None:
     LOGGER.info(Colors.colorize("No default editor found", Colors.YELLOW))
 
 
+def check_valid_ref(num: Union[str, int], item_count: int) -> int:
+  """Check if a reference number is valid."""
+  num = int(num)
+  if num < 0:
+    raise argparse.ArgumentTypeError("%s is an invalid positive int value" % num)
+  elif num > item_count:
+    raise argparse.ArgumentTypeError("%s is an out of range" % num)
+  return num
+
+
+def parse_range(range_string: str, item_count: int) -> List[int]:
+  """Parse a range string into a list of integers."""
+  output: List[int] = []
+  parts = range_string.split(",")  # singles
+  for part in parts:
+    bounds = part.split(":")  # range selection
+    if len(bounds) == 2:  # defined range
+      if bounds[1] == "":  # unbounded range
+        output += range(int(bounds[0]), item_count + 1)
+      else:  # bounded range
+        output += range(int(bounds[0]), int(bounds[1]) + 1)
+    else:  # single int
+      output.append(int(part))
+  return sorted(output)
+
+
+def check_valid_range(range_string: str, item_count: int) -> str:
+  """Check if a range string is valid."""
+  values = parse_range(range_string, item_count)
+  for value in values:
+    check_valid_ref(value, item_count)
+  return range_string
+
+
 class GitStatusTool:
   def __init__(self) -> None:
     self._status_list: StatusDictType = []
@@ -104,6 +138,19 @@ class GitStatusTool:
       " ": "        ",
     }
 
+  @property
+  def _ref_help_message(self) -> str:
+    return """
+    {0}   - accepts an {2} for a file reference
+    {1} - accepts an {2}, a {3}, and/or a range in the form {4}
+                where x is the start index and y is the end index (inclusive)""".format(
+      Colors.colorize("REF_INT", Colors.RESET),
+      Colors.colorize("REF_RANGE", Colors.RESET),
+      Colors.colorize("integer", Colors.BOLD),
+      Colors.colorize("comma separated list", Colors.BOLD),
+      Colors.colorize("x:y", Colors.BOLD),
+    )
+
   def _generate_status_list(self) -> Tuple[StatusDictType, int]:
     (output_bytes, err) = bash("git status --porcelain")
     if len(err) != 0:
@@ -120,39 +167,30 @@ class GitStatusTool:
     return (status_list, self._item_count)
 
   def _check_valid_ref(self, num: Union[str, int]) -> int:
-    num = int(num)
-    if num < 0:
-      raise argparse.ArgumentTypeError("%s is an invalid positive int value" % num)
-    elif num > self._item_count:
-      raise argparse.ArgumentTypeError("%s is an out of range" % num)
-    return num
+    """Wrapper for the standalone check_valid_ref function."""
+    return check_valid_ref(num, self._item_count)
 
   def _parse_range(self, range_string: str) -> List[int]:
+    """Wrapper for the standalone parse_range function."""
     try:
-      output: List[int] = []
-      parts = range_string.split(",")  # singles
-      for part in parts:
-        bounds = part.split(":")  # range selection
-        if len(bounds) == 2:  # defined range
-          if bounds[1] == "":  # unbounded range
-            output += range(int(bounds[0]), self._item_count + 1)
-          else:  # bounded range
-            output += range(int(bounds[0]), int(bounds[1]) + 1)
-        else:  # single int
-          output.append(int(part))
+      return parse_range(range_string, self._item_count)
     except ValueError:
-      epilog = getattr(self._parser, "epilog", None)
-      epilog_text = epilog if epilog is not None else ""
-      LOGGER.info(Colors.colorize("ValueError\n", Colors.RED) + epilog_text)
+      LOGGER.info(
+        Colors.colorize("ValueError in range parsing\n", Colors.RED)
+        + self._ref_help_message
+      )
       exit(1)
-    return output
 
   def _check_valid_range(self, range_string: str) -> str:
-    values = self._parse_range(range_string)
-    for value in values:
-      self._check_valid_ref(value)
-    else:
-      return range_string
+    """Wrapper for the standalone check_valid_range function."""
+    try:
+      return check_valid_range(range_string, self._item_count)
+    except ValueError:
+      LOGGER.info(
+        Colors.colorize("ValueError in range parsing\n", Colors.RED)
+        + self._ref_help_message
+      )
+      exit(1)
 
   def _display_list(self, status_list: Optional[StatusDictType] = None) -> None:
     if status_list is None:
@@ -270,17 +308,7 @@ class GitStatusTool:
         + Colors.colorize("<file>", Colors.RED)
       ),
     )
-    parser.epilog = """
-    {1}   - accepts an {3} for a file reference as referenced in {0} default display
-    {2} - accepts an {3}, a {4}, and/or a range in the form {5}
-                where x is the start index and y is the end index (inclusive)""".format(
-      parser.prog,
-      Colors.colorize("REF_INT", Colors.RESET),
-      Colors.colorize("REF_RANGE", Colors.RESET),
-      Colors.colorize("integer", Colors.BOLD),
-      Colors.colorize("comma separated list", Colors.BOLD),
-      Colors.colorize("x:y", Colors.BOLD),
-    )
+    parser.epilog = self._ref_help_message
     return parser
 
   def run(self) -> None:

@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Add setup_dev.sh script which installs a precommit hook that uses ruff and mypy
 - Add update_pypi.sh script
+- Add unit tests with pytest
 
 ### Changed
 - Migrated from setup.py to pyproject.toml

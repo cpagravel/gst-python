@@ -13,8 +13,8 @@ PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 echo "Setting up development environment for gst-python..."
 
 # Install development dependencies
-echo "Installing development dependencies (mypy, ruff, build, twine, packaging)..."
-pip3 install mypy ruff build twine
+echo "Installing development dependencies (mypy, ruff, build, twine, packaging, pytest)..."
+pip3 install mypy ruff build twine pytest
 echo "Updating packaging to fix twine upload issues..."  # See https://github.com/pypa/twine/issues/1216#issuecomment-2606531615
 pip3 install -U packaging
 

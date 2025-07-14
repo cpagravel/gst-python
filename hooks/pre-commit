@@ -35,6 +35,11 @@ if ! command -v ruff &> /dev/null; then
     exit 1
 fi
 
+if ! command -v pytest &> /dev/null; then
+    echo "Error: pytest is not installed. Run: pip install pytest"
+    exit 1
+fi
+
 # Run ruff formatter (with 2-space indentation)
 echo "Running ruff formatter..."
 ruff format $PYTHON_FILES
@@ -59,6 +64,14 @@ echo "Running mypy type checker..."
 mypy $PYTHON_FILES
 if [ $? -ne 0 ]; then
     echo "Type checking failed. Please fix the issues above."
+    exit 1
+fi
+
+# Run unit tests
+echo "Running unit tests..."
+pytest tests/
+if [ $? -ne 0 ]; then
+    echo "Unit tests failed. Please fix the issues above."
     exit 1
 fi
 

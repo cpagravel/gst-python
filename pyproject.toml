@@ -33,6 +33,12 @@ Download = "https://github.com/cpagravel/gst-python/archive/0.1.7.tar.gz"
 [project.scripts]
 gst = "gst:main"
 
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
 [tool.setuptools]
 py-modules = ["gst"]
 
