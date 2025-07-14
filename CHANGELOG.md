@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reformatted gst.py to follow ruff formatting
 - Follow PEP8 naming conventions in gst.py
 - Use class in gst.py instead of global variables
+- Use `git status --porcelain` instead of `git status -s` for improved stability
 
 ### Fixed
 - Fixed mypy errors in gst.py

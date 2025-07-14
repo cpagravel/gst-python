@@ -105,7 +105,7 @@ class GitStatusTool:
     }
 
   def _generate_status_list(self) -> Tuple[StatusDictType, int]:
-    (output_bytes, err) = bash("git status -s")
+    (output_bytes, err) = bash("git status --porcelain")
     if len(err) != 0:
       raise RuntimeError(err.decode("utf-8"))
     output = output_bytes.decode("utf-8")
