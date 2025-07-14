@@ -70,7 +70,6 @@ This script installs development dependencies (black, mypy) and sets up a pre-co
 - Python3 (re: https://pythonclock.org/)
 
 ## TODO
-- Use a class and get rid of globals (parser, item_count)
 - Upload pictures to show colored text (or wish harder for github to support it)
 
 ## License MIT
