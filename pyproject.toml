@@ -1,3 +1,41 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gst"
+version = "0.1.7"
+description = "Git status tool"
+readme = "README.md"
+license = "MIT"
+authors = [
+    {name = "Chris Gravel", email = "cpagravel@gmail.com"}
+]
+keywords = ["git", "git status", "git workflow"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Version Control :: Git",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+requires-python = ">=3.8"
+
+[project.urls]
+Homepage = "https://github.com/cpagravel/gst-python"
+Repository = "https://github.com/cpagravel/gst-python"
+Download = "https://github.com/cpagravel/gst-python/archive/0.1.7.tar.gz"
+
+[project.scripts]
+gst = "gst:main"
+
+[tool.setuptools]
+py-modules = ["gst"]
+
 # Using ruff for both formatting and linting with 2-space indentation
 
 [tool.ruff]

@@ -13,8 +13,10 @@ PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 echo "Setting up development environment for gst-python..."
 
 # Install development dependencies
-echo "Installing development dependencies (mypy, ruff)..."
-pip3 install mypy ruff
+echo "Installing development dependencies (mypy, ruff, build, twine, packaging)..."
+pip3 install mypy ruff build twine
+echo "Updating packaging to fix twine upload issues..."  # See https://github.com/pypa/twine/issues/1216#issuecomment-2606531615
+pip3 install -U packaging
 
 # Configure local repository to use local hooks instead of global ones
 echo "Configuring repository to use local git hooks..."
@@ -37,3 +39,7 @@ echo "You can also run these tools manually:"
 echo "  ruff format *.py     # Format code with 2-space indentation"
 echo "  ruff check *.py      # Lint code (PEP8, naming, etc.)"
 echo "  mypy *.py            # Type check"
+echo ""
+echo "For releases:"
+echo "  ./scripts/update_pypi.sh          # Release to PyPI"
+echo "  ./scripts/update_pypi.sh --test-pypi  # Test release to TestPyPI"
