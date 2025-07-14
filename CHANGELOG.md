@@ -8,7 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Add setup_dev.sh script which installs a precommit hook that uses black and mypy.
+- Add setup_dev.sh script which installs a precommit hook that uses ruff and mypy
+- Add update_pypi.sh script
+
+### Changed
+- Migrated from setup.py to pyproject.toml
+- Reformatted gst.py to follow ruff formatting
+- Follow PEP8 naming conventions in gst.py
+- Use class in gst.py instead of global variables
+
+### Fixed
+- Fixed mypy errors in gst.py
 
 ## [0.1.7] - 2025-07-13
 
