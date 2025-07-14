@@ -84,10 +84,10 @@ def open_in_editor(file_path: str) -> None:
 
 
 class GitStatusTool:
-  def __init__(self):
+  def __init__(self) -> None:
     self._status_list: StatusDictType = []
     self._item_count: int = 0
-    self._parser: argparse.ArgumentParser
+    self._parser: argparse.ArgumentParser = self._create_parser()
     self._args: argparse.Namespace
     self._less = Less(20)
     self._git_flag_decode = {
@@ -141,7 +141,9 @@ class GitStatusTool:
         else:  # single int
           output.append(int(part))
     except ValueError:
-      LOGGER.info(Colors.colorize("ValueError\n", Colors.RED) + self._parser.epilog)
+      epilog = getattr(self._parser, "epilog", None)
+      epilog_text = epilog if epilog is not None else ""
+      LOGGER.info(Colors.colorize("ValueError\n", Colors.RED) + epilog_text)
       exit(1)
     return output
 
@@ -186,17 +188,13 @@ class GitStatusTool:
         )
       )
 
-  def _setup_parser(self) -> None:
-    self._parser = argparse.ArgumentParser(
-      formatter_class=argparse.RawTextHelpFormatter
-    )
+  def _create_parser(self) -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
 
-    self._parser.add_argument(
-      "-v", action="store_true", help="show full paths of files"
-    )
-    self._parser.add_argument("--debug", action="store_true", help="show bash commands")
+    parser.add_argument("-v", action="store_true", help="show full paths of files")
+    parser.add_argument("--debug", action="store_true", help="show bash commands")
 
-    group1 = self._parser.add_mutually_exclusive_group()
+    group1 = parser.add_mutually_exclusive_group()
     group1.add_argument(
       "REF",
       metavar="REF_INT",
@@ -272,17 +270,18 @@ class GitStatusTool:
         + Colors.colorize("<file>", Colors.RED)
       ),
     )
-    self._parser.epilog = """
+    parser.epilog = """
     {1}   - accepts an {3} for a file reference as referenced in {0} default display
     {2} - accepts an {3}, a {4}, and/or a range in the form {5}
                 where x is the start index and y is the end index (inclusive)""".format(
-      self._parser.prog,
+      parser.prog,
       Colors.colorize("REF_INT", Colors.RESET),
       Colors.colorize("REF_RANGE", Colors.RESET),
       Colors.colorize("integer", Colors.BOLD),
       Colors.colorize("comma separated list", Colors.BOLD),
       Colors.colorize("x:y", Colors.BOLD),
     )
+    return parser
 
   def run(self) -> None:
     ######################
@@ -294,7 +293,6 @@ class GitStatusTool:
       LOGGER.info(e)
       exit(1)
 
-    self._setup_parser()
     self._args = self._parser.parse_args()
 
     if self._args.debug:
