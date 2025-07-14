@@ -25,11 +25,6 @@ fi
 echo "Checking Python files: $PYTHON_FILES"
 
 # Check if required tools are installed
-if ! command -v black &> /dev/null; then
-    echo "Error: black is not installed. Run: pip install black"
-    exit 1
-fi
-
 if ! command -v mypy &> /dev/null; then
     echo "Error: mypy is not installed. Run: pip install mypy"
     exit 1
@@ -40,11 +35,11 @@ if ! command -v ruff &> /dev/null; then
     exit 1
 fi
 
-# Run black formatter
-echo "Running black formatter..."
-black $PYTHON_FILES
+# Run ruff formatter (with 2-space indentation)
+echo "Running ruff formatter..."
+ruff format $PYTHON_FILES
 if [ $? -ne 0 ]; then
-    echo "Black formatting failed."
+    echo "Ruff formatting failed."
     exit 1
 fi
 
