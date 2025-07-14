@@ -79,7 +79,6 @@ python scripts/generate_svg_examples.py
 - Python3 (re: https://pythonclock.org/)
 
 ## TODO
-- Add more unit tests to cover checkout, reset, delete, diff, and edit
 - Add more example scenarios
 - Consider adding animated GIFs for complex workflows
 

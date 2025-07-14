@@ -615,5 +615,317 @@ class TestGitAddFunctionality:
     mock_bash.assert_any_call(["git", "add", "modified.py"])
 
 
+class TestGitDiffFunctionality:
+  """Test the 'gst -d' (git diff) functionality."""
+
+  @patch("gst.bash")
+  @patch("sys.argv", ["gst", "-d", "0"])
+  def test_diff_single_file(self, mock_bash):
+    """Test viewing diff for a single file."""
+    diff_output = b"""diff --git a/test.py b/test.py
+index 1234567..abcdefg 100644
+--- a/test.py
++++ b/test.py
+@@ -1,3 +1,4 @@
+ def hello():
++    print("world")
+     return "hello"
+"""
+    mock_bash.side_effect = [
+      (b"M  test.py\n", b""),  # _generate_status_list call
+      (diff_output, b""),  # git diff call
+    ]
+
+    tool = gst.GitStatusTool()
+    tool.run()
+
+    # Verify git diff was called with the correct file
+    assert mock_bash.call_count == 2
+    mock_bash.assert_any_call(["git", "diff", "HEAD", "test.py"])
+
+  @patch("gst.bash")
+  @patch("sys.argv", ["gst", "-d", "1"])
+  def test_diff_with_complex_path(self, mock_bash):
+    """Test viewing diff for a file with complex path."""
+    mock_bash.side_effect = [
+      (b"M  src/utils/helper.py\nA  test.py\n", b""),  # _generate_status_list call
+      (b"diff output here", b""),  # git diff call
+    ]
+
+    tool = gst.GitStatusTool()
+    tool.run()
+
+    # Verify git diff was called with the correct file (index 1)
+    assert mock_bash.call_count == 2
+    mock_bash.assert_any_call(["git", "diff", "HEAD", "test.py"])
+
+
+class TestGitResetFunctionality:
+  """Test the 'gst -r' (git reset) functionality."""
+
+  @patch("gst.bash")
+  @patch("sys.argv", ["gst", "-r", "0"])
+  def test_reset_single_file(self, mock_bash):
+    """Test resetting a single staged file."""
+    mock_bash.side_effect = [
+      (b"M  staged.py\n", b""),  # _generate_status_list call
+      (b"", b""),  # git reset call
+      (b"", b""),  # _display_list call
+    ]
+
+    tool = gst.GitStatusTool()
+    tool.run()
+
+    # Verify git reset was called with the staged file
+    assert mock_bash.call_count == 3
+    mock_bash.assert_any_call(["git", "reset", "HEAD", "staged.py"])
+
+  @patch("gst.bash")
+  @patch("sys.argv", ["gst", "-r", "0,2"])
+  def test_reset_multiple_files(self, mock_bash):
+    """Test resetting multiple staged files."""
+    mock_bash.side_effect = [
+      (b"M  file1.py\nA  file2.py\nM  file3.py\n", b""),  # _generate_status_list call
+      (b"", b""),  # git reset call
+      (b"", b""),  # _display_list call
+    ]
+
+    tool = gst.GitStatusTool()
+    tool.run()
+
+    # Verify git reset was called with multiple files
+    assert mock_bash.call_count == 3
+    mock_bash.assert_any_call(["git", "reset", "HEAD", "file1.py", "file3.py"])
+
+  @patch("gst.bash")
+  @patch("sys.argv", ["gst", "-r", "1:3"])
+  def test_reset_range_of_files(self, mock_bash):
+    """Test resetting a range of files."""
+    mock_bash.side_effect = [
+      (
+        b"M  file0.py\nA  file1.py\nM  file2.py\nD  file3.py\n",
+        b"",
+      ),  # _generate_status_list call
+      (b"", b""),  # git reset call
+      (b"", b""),  # _display_list call
+    ]
+
+    tool = gst.GitStatusTool()
+    tool.run()
+
+    # Verify git reset was called with range of files (index 1, 2, 3)
+    assert mock_bash.call_count == 3
+    mock_bash.assert_any_call(
+      ["git", "reset", "HEAD", "file1.py", "file2.py", "file3.py"]
+    )
+
+
+class TestGitDeleteFunctionality:
+  """Test the 'gst -D' (rm) functionality."""
+
+  @patch("gst.bash")
+  @patch("sys.argv", ["gst", "-D", "0"])
+  def test_delete_single_file(self, mock_bash):
+    """Test deleting a single file."""
+    mock_bash.side_effect = [
+      (b"?? unwanted.py\n", b""),  # _generate_status_list call
+      (b"", b""),  # rm call
+      (b"", b""),  # _display_list call
+    ]
+
+    tool = gst.GitStatusTool()
+    tool.run()
+
+    # Verify rm was called with the file
+    assert mock_bash.call_count == 3
+    mock_bash.assert_any_call(["rm", "-r", "unwanted.py"])
+
+  @patch("gst.bash")
+  @patch("sys.argv", ["gst", "-D", "0,1"])
+  def test_delete_multiple_files(self, mock_bash):
+    """Test deleting multiple files."""
+    mock_bash.side_effect = [
+      (b"?? file1.tmp\n?? file2.tmp\n", b""),  # _generate_status_list call
+      (b"", b""),  # rm call
+      (b"", b""),  # _display_list call
+    ]
+
+    tool = gst.GitStatusTool()
+    tool.run()
+
+    # Verify rm was called with both files
+    assert mock_bash.call_count == 3
+    mock_bash.assert_any_call(["rm", "-r", "file1.tmp", "file2.tmp"])
+
+  @patch("gst.bash")
+  @patch("sys.argv", ["gst", "-D", "0"])
+  def test_delete_directory(self, mock_bash):
+    """Test deleting a directory."""
+    mock_bash.side_effect = [
+      (b"?? build/\n", b""),  # _generate_status_list call
+      (b"", b""),  # rm call
+      (b"", b""),  # _display_list call
+    ]
+
+    tool = gst.GitStatusTool()
+    tool.run()
+
+    # Verify rm -r was called (which handles directories)
+    assert mock_bash.call_count == 3
+    mock_bash.assert_any_call(["rm", "-r", "build/"])
+
+
+class TestGitCheckoutFunctionality:
+  """Test the 'gst -c' (git checkout) functionality."""
+
+  @patch("gst.bash")
+  @patch("sys.argv", ["gst", "-c", "0"])
+  def test_checkout_single_file(self, mock_bash):
+    """Test checking out a single modified file."""
+    mock_bash.side_effect = [
+      (b" M modified.py\n", b""),  # _generate_status_list call
+      (b"", b""),  # git checkout call
+      (b"", b""),  # _display_list call
+    ]
+
+    tool = gst.GitStatusTool()
+    tool.run()
+
+    # Verify git checkout was called with the modified file
+    assert mock_bash.call_count == 3
+    mock_bash.assert_any_call(["git", "checkout", "HEAD", "modified.py"])
+
+  @patch("gst.bash")
+  @patch("sys.argv", ["gst", "-c", "0,1"])
+  def test_checkout_multiple_files(self, mock_bash):
+    """Test checking out multiple modified files."""
+    mock_bash.side_effect = [
+      (b" M file1.py\n M file2.py\n", b""),  # _generate_status_list call
+      (b"", b""),  # git checkout call
+      (b"", b""),  # _display_list call
+    ]
+
+    tool = gst.GitStatusTool()
+    tool.run()
+
+    # Verify git checkout was called with both files
+    assert mock_bash.call_count == 3
+    mock_bash.assert_any_call(["git", "checkout", "HEAD", "file1.py", "file2.py"])
+
+  @patch("gst.bash")
+  @patch("sys.argv", ["gst", "-c", "1:"])
+  def test_checkout_unbounded_range(self, mock_bash):
+    """Test checking out files using unbounded range."""
+    mock_bash.side_effect = [
+      (b" M file0.py\n M file1.py\n M file2.py\n", b""),  # _generate_status_list call
+      (b"", b""),  # git checkout call
+      (b"", b""),  # _display_list call
+    ]
+
+    tool = gst.GitStatusTool()
+    tool.run()
+
+    # Verify git checkout was called with files 1 and 2 (unbounded from 1)
+    assert mock_bash.call_count == 3
+    mock_bash.assert_any_call(["git", "checkout", "HEAD", "file1.py", "file2.py"])
+
+
+class TestGitEditFunctionality:
+  """Test the 'gst -e' (editor) functionality."""
+
+  @patch("gst.open_in_editor")
+  @patch("gst.bash")
+  @patch("sys.argv", ["gst", "-e", "0"])
+  def test_edit_single_file(self, mock_bash, mock_open_editor):
+    """Test opening a single file in editor."""
+    mock_bash.side_effect = [
+      (b"M  script.py\n", b""),  # _generate_status_list call
+    ]
+
+    tool = gst.GitStatusTool()
+    tool.run()
+
+    # Verify open_in_editor was called with the correct file
+    assert mock_bash.call_count == 1
+    mock_open_editor.assert_called_once_with("script.py")
+
+  @patch("gst.open_in_editor")
+  @patch("gst.bash")
+  @patch("sys.argv", ["gst", "-e", "2"])
+  def test_edit_file_with_complex_path(self, mock_bash, mock_open_editor):
+    """Test opening a file with complex path in editor."""
+    mock_bash.side_effect = [
+      (
+        b"M  file1.py\nA  file2.py\n?? src/utils/helper.py\n",
+        b"",
+      ),  # _generate_status_list call
+    ]
+
+    tool = gst.GitStatusTool()
+    tool.run()
+
+    # Verify open_in_editor was called with the correct file (index 2)
+    assert mock_bash.call_count == 1
+    mock_open_editor.assert_called_once_with("src/utils/helper.py")
+
+  @patch("os.environ.get")
+  @patch("subprocess.run")
+  @patch("gst.bash")
+  @patch("sys.argv", ["gst", "-e", "0"])
+  def test_edit_with_visual_editor(self, mock_bash, mock_subprocess, mock_env):
+    """Test opening file with VISUAL environment variable set."""
+    mock_bash.side_effect = [
+      (b"M  test.py\n", b""),  # _generate_status_list call
+    ]
+    mock_env.side_effect = lambda var: "code" if var == "VISUAL" else None
+
+    tool = gst.GitStatusTool()
+    tool.run()
+
+    # Verify subprocess.run was called with the VISUAL editor
+    assert mock_bash.call_count == 1
+    mock_subprocess.assert_called_once_with(["code", "test.py"])
+
+  @patch("os.environ.get")
+  @patch("subprocess.run")
+  @patch("gst.bash")
+  @patch("sys.argv", ["gst", "-e", "0"])
+  def test_edit_with_editor_fallback(self, mock_bash, mock_subprocess, mock_env):
+    """Test opening file with EDITOR environment variable as fallback."""
+    mock_bash.side_effect = [
+      (b"M  test.py\n", b""),  # _generate_status_list call
+    ]
+    # VISUAL returns None, EDITOR returns vim
+    mock_env.side_effect = lambda var: "vim" if var == "EDITOR" else None
+
+    tool = gst.GitStatusTool()
+    tool.run()
+
+    # Verify subprocess.run was called with the EDITOR fallback
+    assert mock_bash.call_count == 1
+    mock_subprocess.assert_called_once_with(["vim", "test.py"])
+
+  @patch("gst.LOGGER")
+  @patch("os.environ.get")
+  @patch("gst.bash")
+  @patch("sys.argv", ["gst", "-e", "0"])
+  def test_edit_no_editor_found(self, mock_bash, mock_env, mock_logger):
+    """Test behavior when no editor is found."""
+    mock_bash.side_effect = [
+      (b"M  test.py\n", b""),  # _generate_status_list call
+    ]
+    mock_env.return_value = None  # No VISUAL or EDITOR set
+
+    tool = gst.GitStatusTool()
+    tool.run()
+
+    # Verify warning message was logged
+    assert mock_bash.call_count == 1
+    mock_logger.info.assert_called_once()
+    # Check that the logged message contains the "No default editor found" text
+    call_args = mock_logger.info.call_args[0][0]
+    assert "No default editor found" in call_args
+
+
 if __name__ == "__main__":
   pytest.main([__file__])
