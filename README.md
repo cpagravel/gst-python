@@ -1,4 +1,4 @@
-# gst [![MIT License][license-badge]](LICENSE.md)
+# gst [![MIT License][license-badge]](LICENSE.md) [![Tests][tests-badge]][tests-url] [![Coverage][coverage-badge]][coverage-url]
 
 ## Synposis
 gst is short for **G**it **St**atus - it's a commandline app with some neat features for improving your workflow with git
@@ -131,3 +131,7 @@ python scripts/generate_svg_examples.py
 [View project License](LICENSE.md).
 
 [license-badge]: https://img.shields.io/badge/license-MIT-007EC7.svg
+[tests-badge]: https://github.com/cpagravel/gst-python/workflows/Tests/badge.svg
+[tests-url]: https://github.com/cpagravel/gst-python/actions/workflows/test.yml
+[coverage-badge]: https://codecov.io/gh/cpagravel/gst-python/branch/master/graph/badge.svg
+[coverage-url]: https://codecov.io/gh/cpagravel/gst-python

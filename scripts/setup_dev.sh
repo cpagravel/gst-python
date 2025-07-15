@@ -13,8 +13,8 @@ PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 echo "Setting up development environment for gst-python..."
 
 # Install development dependencies
-echo "Installing development dependencies (mypy, ruff, build, twine, packaging, pytest)..."
-pip3 install mypy ruff build twine pytest
+echo "Installing development dependencies (mypy, ruff, build, twine, packaging, pytest, pytest-cov)..."
+pip3 install mypy ruff build twine pytest pytest-cov
 echo "Updating packaging to fix twine upload issues..."  # See https://github.com/pypa/twine/issues/1216#issuecomment-2606531615
 pip3 install -U packaging
 
@@ -39,6 +39,8 @@ echo "You can also run these tools manually:"
 echo "  ruff format *.py     # Format code with 2-space indentation"
 echo "  ruff check *.py      # Lint code (PEP8, naming, etc.)"
 echo "  mypy *.py            # Type check"
+echo "  pytest tests/        # Run tests"
+echo "  pytest tests/ --cov=gst --cov-report=term-missing  # Run tests with coverage"
 echo ""
 echo "For releases:"
 echo "  ./scripts/update_pypi.sh          # Release to PyPI"
