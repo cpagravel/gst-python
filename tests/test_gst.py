@@ -195,7 +195,7 @@ class TestGenerateStatusList:
 
     assert status_list == []
     assert item_count == -1
-    mock_bash.assert_called_once_with("git status --porcelain")
+    mock_bash.assert_called_once_with("git status -s")
 
   @patch("gst.bash")
   def test_generate_status_list_single_file(self, mock_bash):
@@ -208,7 +208,7 @@ class TestGenerateStatusList:
     expected = [{"mod": "M ", "filePath": "example.py"}]
     assert status_list == expected
     assert item_count == 0
-    mock_bash.assert_called_once_with("git status --porcelain")
+    mock_bash.assert_called_once_with("git status -s")
 
   @patch("gst.bash")
   def test_generate_status_list_multiple_files(self, mock_bash):
@@ -227,7 +227,7 @@ class TestGenerateStatusList:
     ]
     assert status_list == expected
     assert item_count == 3
-    mock_bash.assert_called_once_with("git status --porcelain")
+    mock_bash.assert_called_once_with("git status -s")
 
   @patch("gst.bash")
   def test_generate_status_list_renamed_file(self, mock_bash):
@@ -241,7 +241,7 @@ class TestGenerateStatusList:
     expected = [{"mod": "R ", "filePath": "new_name.py"}]
     assert status_list == expected
     assert item_count == 0
-    mock_bash.assert_called_once_with("git status --porcelain")
+    mock_bash.assert_called_once_with("git status -s")
 
   @patch("gst.bash")
   def test_generate_status_list_complex_paths(self, mock_bash):
@@ -261,7 +261,7 @@ class TestGenerateStatusList:
     ]
     assert status_list == expected
     assert item_count == 2
-    mock_bash.assert_called_once_with("git status --porcelain")
+    mock_bash.assert_called_once_with("git status -s")
 
   @patch("gst.bash")
   def test_generate_status_list_mixed_modifications(self, mock_bash):
@@ -281,7 +281,7 @@ class TestGenerateStatusList:
     ]
     assert status_list == expected
     assert item_count == 2
-    mock_bash.assert_called_once_with("git status --porcelain")
+    mock_bash.assert_called_once_with("git status -s")
 
   @patch("gst.bash")
   def test_generate_status_list_trailing_newline(self, mock_bash):
@@ -325,7 +325,7 @@ class TestGenerateStatusList:
     with pytest.raises(RuntimeError, match="fatal: not a git repository"):
       tool._generate_status_list()
 
-    mock_bash.assert_called_once_with("git status --porcelain")
+    mock_bash.assert_called_once_with("git status -s")
 
   @patch("gst.bash")
   def test_generate_status_list_unicode_filenames(self, mock_bash):
