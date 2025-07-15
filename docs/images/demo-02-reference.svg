@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="60" viewBox="0 0 200 60">
+  <rect width="200" height="60" fill="#1e1e1e" rx="8"/>
+  <g font-family="'Courier New', monospace" font-size="14" fill="#d4d4d4">
+    <text x="15" y="25" fill="#d4d4d4">src/main.py</text>
+  </g>
+</svg>

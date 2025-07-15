@@ -108,6 +108,35 @@ def create_svg_terminal(content, filename, width=600, height=300):
   print(f"Generated {filename}")
 
 
+def create_svg_terminal_plain(content, filename, width=600, height=300):
+  """Create an SVG file with plain text content (no terminal styling)."""
+
+  # Terminal colors (based on common dark theme)
+  bg_color = "#1e1e1e"
+  text_color = "#d4d4d4"
+
+  # Start SVG
+  svg_content = f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">
+  <rect width="{width}" height="{height}" fill="{bg_color}" rx="8"/>
+  <g font-family="'Courier New', monospace" font-size="14" fill="{text_color}">
+'''
+
+  # Add the content as simple text
+  y_offset = 25
+  svg_content += (
+    f'    <text x="15" y="{y_offset}" fill="{text_color}">{content}</text>\n'
+  )
+
+  svg_content += """  </g>
+</svg>"""
+
+  # Write to file
+  with open(filename, "w") as f:
+    f.write(svg_content)
+
+  print(f"Generated {filename}")
+
+
 def parse_status_line(line):
   """Parse a gst status line to extract components."""
   # Remove ANSI codes for parsing
@@ -128,42 +157,78 @@ def parse_status_line(line):
 def generate_examples():
   """Generate SVG examples for different gst commands."""
 
-  # Example 1: Basic gst output
-  basic_output = f"""{Colors.YELLOW}#   INDEX     CUR_TREE  FILE{Colors.OFF}
+  # Demo Step 1: Initial git status
+  demo_initial = f"""{Colors.YELLOW}#   INDEX     CUR_TREE  FILE{Colors.OFF}
 {Colors.PURPLE}0{Colors.OFF}   {Colors.GREEN}Untrackd  {Colors.OFF}{Colors.RED}Untrackd  {Colors.OFF}README.md ({Colors.PURPLE}0{Colors.OFF})
-{Colors.PURPLE}1{Colors.OFF}   {Colors.GREEN}        {Colors.OFF} {Colors.RED}Modified  {Colors.OFF}gst.py ({Colors.PURPLE}1{Colors.OFF})
-{Colors.PURPLE}2{Colors.OFF}   {Colors.GREEN}Added     {Colors.OFF}{Colors.RED}Modified  {Colors.OFF}tests/test_gst.py ({Colors.PURPLE}2{Colors.OFF})
-{Colors.PURPLE}3{Colors.OFF}   {Colors.GREEN}Deleted   {Colors.OFF}{Colors.RED}        {Colors.OFF}old_file.py ({Colors.PURPLE}3{Colors.OFF})
-{Colors.PURPLE}4{Colors.OFF}   {Colors.GREEN}Untrackd  {Colors.OFF}{Colors.RED}Untrackd  {Colors.OFF}dist/ ({Colors.PURPLE}4{Colors.OFF})"""
+{Colors.PURPLE}1{Colors.OFF}   {Colors.GREEN}        {Colors.OFF} {Colors.RED}Modified  {Colors.OFF}src/main.py ({Colors.PURPLE}1{Colors.OFF})
+{Colors.PURPLE}2{Colors.OFF}   {Colors.GREEN}        {Colors.OFF} {Colors.RED}Modified  {Colors.OFF}src/utils.py ({Colors.PURPLE}2{Colors.OFF})
+{Colors.PURPLE}3{Colors.OFF}   {Colors.GREEN}Untrackd  {Colors.OFF}{Colors.RED}Untrackd  {Colors.OFF}build/ ({Colors.PURPLE}3{Colors.OFF})"""
 
-  create_svg_terminal(basic_output, "docs/images/gst-basic.svg", 550, 140)
+  create_svg_terminal(demo_initial, "docs/images/demo-01-status.svg", 550, 120)
 
-  # Example 2: After adding files
-  after_add = f"""{Colors.YELLOW}#   INDEX     CUR_TREE  FILE{Colors.OFF}
+  # Demo Step 2: File reference output (plain text)
+  file_ref_output = "src/main.py"
+  create_svg_terminal_plain(
+    file_ref_output, "docs/images/demo-02-reference.svg", 200, 60
+  )
+
+  # Demo Step 3: After gst -a 0 (add README.md)
+  demo_after_add_0 = f"""{Colors.YELLOW}#   INDEX     CUR_TREE  FILE{Colors.OFF}
 {Colors.PURPLE}0{Colors.OFF}   {Colors.GREEN}Added     {Colors.OFF}{Colors.RED}        {Colors.OFF}README.md ({Colors.PURPLE}0{Colors.OFF})
-{Colors.PURPLE}1{Colors.OFF}   {Colors.GREEN}Added     {Colors.OFF}{Colors.RED}        {Colors.OFF}gst.py ({Colors.PURPLE}1{Colors.OFF})
-{Colors.PURPLE}2{Colors.OFF}   {Colors.GREEN}Added     {Colors.OFF}{Colors.RED}Modified  {Colors.OFF}tests/test_gst.py ({Colors.PURPLE}2{Colors.OFF})
-{Colors.PURPLE}3{Colors.OFF}   {Colors.GREEN}Deleted   {Colors.OFF}{Colors.RED}        {Colors.OFF}old_file.py ({Colors.PURPLE}3{Colors.OFF})
-{Colors.PURPLE}4{Colors.OFF}   {Colors.GREEN}Untrackd  {Colors.OFF}{Colors.RED}Untrackd  {Colors.OFF}dist/ ({Colors.PURPLE}4{Colors.OFF})"""
+{Colors.PURPLE}1{Colors.OFF}   {Colors.GREEN}        {Colors.OFF} {Colors.RED}Modified  {Colors.OFF}src/main.py ({Colors.PURPLE}1{Colors.OFF})
+{Colors.PURPLE}2{Colors.OFF}   {Colors.GREEN}        {Colors.OFF} {Colors.RED}Modified  {Colors.OFF}src/utils.py ({Colors.PURPLE}2{Colors.OFF})
+{Colors.PURPLE}3{Colors.OFF}   {Colors.GREEN}Untrackd  {Colors.OFF}{Colors.RED}Untrackd  {Colors.OFF}build/ ({Colors.PURPLE}3{Colors.OFF})"""
 
-  create_svg_terminal(after_add, "docs/images/gst-after-add.svg", 550, 140)
+  create_svg_terminal(demo_after_add_0, "docs/images/demo-03-after-add.svg", 550, 120)
 
-  # Example 3: Git diff output
-  diff_output = f'''{Colors.WHITE}diff --git a/gst.py b/gst.py{Colors.OFF}
-{Colors.WHITE}index e697793..295fbeb 100644{Colors.OFF}
-{Colors.WHITE}--- a/gst.py{Colors.OFF}
-{Colors.WHITE}+++ b/gst.py{Colors.OFF}
-{Colors.BLUE}@@ -20,6 +20,7 @@ class Colors:{Colors.OFF}
- class Colors:
-   BLUE = "\\033[1;34m"
-   BOLD = "\\033[;1m"
-{Colors.GREEN}+  CYAN = "\\033[1;36m"{Colors.OFF}
-   GREEN = "\\033[1;32m"
-   OFF = "\\033[1;;m"
-{Colors.RED}-  PURPLE = "\\033[1;35m"{Colors.OFF}
-{Colors.GREEN}+  PURPLE = "\\033[1;95m"  # Brighter purple{Colors.OFF}'''
+  # Demo Step 4: After gst -r 0 (reset README.md)
+  demo_after_reset = f"""{Colors.YELLOW}#   INDEX     CUR_TREE  FILE{Colors.OFF}
+{Colors.PURPLE}0{Colors.OFF}   {Colors.GREEN}Untrackd  {Colors.OFF}{Colors.RED}Untrackd  {Colors.OFF}README.md ({Colors.PURPLE}0{Colors.OFF})
+{Colors.PURPLE}1{Colors.OFF}   {Colors.GREEN}        {Colors.OFF} {Colors.RED}Modified  {Colors.OFF}src/main.py ({Colors.PURPLE}1{Colors.OFF})
+{Colors.PURPLE}2{Colors.OFF}   {Colors.GREEN}        {Colors.OFF} {Colors.RED}Modified  {Colors.OFF}src/utils.py ({Colors.PURPLE}2{Colors.OFF})
+{Colors.PURPLE}3{Colors.OFF}   {Colors.GREEN}Untrackd  {Colors.OFF}{Colors.RED}Untrackd  {Colors.OFF}build/ ({Colors.PURPLE}3{Colors.OFF})"""
 
-  create_svg_terminal_diff(diff_output, "docs/images/gst-diff.svg", 650, 220)
+  create_svg_terminal(demo_after_reset, "docs/images/demo-04-after-reset.svg", 550, 120)
+
+  # Demo Step 5: After gst -c 1 (checkout src/main.py)
+  demo_after_checkout = f"""{Colors.YELLOW}#   INDEX     CUR_TREE  FILE{Colors.OFF}
+{Colors.PURPLE}0{Colors.OFF}   {Colors.GREEN}Untrackd  {Colors.OFF}{Colors.RED}Untrackd  {Colors.OFF}README.md ({Colors.PURPLE}0{Colors.OFF})
+{Colors.PURPLE}1{Colors.OFF}   {Colors.GREEN}        {Colors.OFF} {Colors.RED}Modified  {Colors.OFF}src/utils.py ({Colors.PURPLE}1{Colors.OFF})
+{Colors.PURPLE}2{Colors.OFF}   {Colors.GREEN}Untrackd  {Colors.OFF}{Colors.RED}Untrackd  {Colors.OFF}build/ ({Colors.PURPLE}2{Colors.OFF})"""
+
+  create_svg_terminal(
+    demo_after_checkout, "docs/images/demo-05-after-checkout.svg", 550, 100
+  )
+
+  # Demo Step 6: After gst -D 2 (delete build/)
+  demo_after_delete = f"""{Colors.YELLOW}#   INDEX     CUR_TREE  FILE{Colors.OFF}
+{Colors.PURPLE}0{Colors.OFF}   {Colors.GREEN}Untrackd  {Colors.OFF}{Colors.RED}Untrackd  {Colors.OFF}README.md ({Colors.PURPLE}0{Colors.OFF})
+{Colors.PURPLE}1{Colors.OFF}   {Colors.GREEN}        {Colors.OFF} {Colors.RED}Modified  {Colors.OFF}src/utils.py ({Colors.PURPLE}1{Colors.OFF})"""
+
+  create_svg_terminal(
+    demo_after_delete, "docs/images/demo-06-after-delete.svg", 550, 80
+  )
+
+  # Demo Step 7: Git diff output for src/utils.py
+  demo_diff = f'''{Colors.WHITE}diff --git a/src/utils.py b/src/utils.py{Colors.OFF}
+{Colors.WHITE}index a1b2c3d..e4f5g6h 100644{Colors.OFF}
+{Colors.WHITE}--- a/src/utils.py{Colors.OFF}
+{Colors.WHITE}+++ b/src/utils.py{Colors.OFF}
+{Colors.BLUE}@@ -1,5 +1,7 @@{Colors.OFF}
+ def format_output(data):
+     """Format data for display"""
+{Colors.GREEN}+    # Added new validation{Colors.OFF}
+{Colors.GREEN}+    if not data:{Colors.OFF}
+{Colors.GREEN}+        return "No data"{Colors.OFF}
+     return str(data)
+{Colors.RED}-    # TODO: Add validation{Colors.OFF}'''
+
+  create_svg_terminal_diff(demo_diff, "docs/images/demo-07-diff.svg", 650, 180)
+
+  # Keep the original examples for backward compatibility
+  create_svg_terminal(demo_initial, "docs/images/gst-basic.svg", 550, 120)
+  create_svg_terminal(demo_after_add_0, "docs/images/gst-after-add.svg", 550, 120)
+  create_svg_terminal_diff(demo_diff, "docs/images/gst-diff.svg", 650, 180)
 
 
 def create_svg_terminal_diff(content, filename, width=600, height=300):

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="550" height="100" viewBox="0 0 550 100">
+  <rect width="550" height="100" fill="#1e1e1e" rx="8"/>
+  <g font-family="'Courier New', monospace" font-size="14" fill="#d4d4d4">
+    <text x="15" y="25" fill="#FFEE58" font-weight="bold">#</text>
+    <text x="45" y="25" fill="#FFEE58" font-weight="bold">INDEX</text>
+    <text x="140" y="25" fill="#FFEE58" font-weight="bold">CUR_TREE</text>
+    <text x="235" y="25" fill="#FFEE58" font-weight="bold">FILE</text>
+    <text x="15" y="43" fill="#CE93D8" font-weight="bold">0</text>
+    <text x="26" y="43" fill="#d4d4d4">   </text>
+    <text x="45" y="43" fill="#66BB6A" font-weight="bold">Untrackd </text>
+    <text x="140" y="43" fill="#EF5350" font-weight="bold">Untrackd </text>
+    <text x="235" y="43" fill="#d4d4d4">README.md </text>
+    <text x="318.6" y="43" fill="#d4d4d4">(</text>
+    <text x="327.0" y="43" fill="#CE93D8" font-weight="bold">0</text>
+    <text x="335.4" y="43" fill="#d4d4d4">)</text>
+    <text x="15" y="61" fill="#CE93D8" font-weight="bold">1</text>
+    <text x="26" y="61" fill="#d4d4d4">   </text>
+    <text x="45" y="61" fill="#66BB6A" font-weight="bold">         </text>
+    <text x="140" y="61" fill="#EF5350" font-weight="bold">Modified </text>
+    <text x="235" y="61" fill="#d4d4d4">src/utils.py </text>
+    <text x="343.8" y="61" fill="#d4d4d4">(</text>
+    <text x="352.2" y="61" fill="#CE93D8" font-weight="bold">1</text>
+    <text x="360.59999999999997" y="61" fill="#d4d4d4">)</text>
+    <text x="15" y="79" fill="#CE93D8" font-weight="bold">2</text>
+    <text x="26" y="79" fill="#d4d4d4">   </text>
+    <text x="45" y="79" fill="#66BB6A" font-weight="bold">Untrackd </text>
+    <text x="140" y="79" fill="#EF5350" font-weight="bold">Untrackd </text>
+    <text x="235" y="79" fill="#d4d4d4">build/ </text>
+    <text x="293.4" y="79" fill="#d4d4d4">(</text>
+    <text x="301.79999999999995" y="79" fill="#CE93D8" font-weight="bold">2</text>
+    <text x="310.19999999999993" y="79" fill="#d4d4d4">)</text>
+  </g>
+</svg>

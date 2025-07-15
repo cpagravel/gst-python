@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="650" height="180" viewBox="0 0 650 180">
+  <rect width="650" height="180" fill="#1e1e1e" rx="8"/>
+  <g font-family="'Courier New', monospace" font-size="14" fill="#d4d4d4">
+    <text x="15" y="25" fill="#ffffff" font-weight="bold">diff --git a/src/utils.py b/src/utils.py</text>
+    <text x="15" y="43" fill="#ffffff" font-weight="bold">index a1b2c3d..e4f5g6h 100644</text>
+    <text x="15" y="61" fill="#ffffff" font-weight="bold">--- a/src/utils.py</text>
+    <text x="15" y="79" fill="#ffffff" font-weight="bold">+++ b/src/utils.py</text>
+    <text x="15" y="97" fill="#4FC3F7" font-weight="bold">@@ -1,5 +1,7 @@</text>
+    <text x="15" y="115" fill="#d4d4d4"> def format_output(data):</text>
+    <text x="15" y="133" fill="#d4d4d4">     """Format data for display"""</text>
+    <text x="15" y="151" fill="#66BB6A" font-weight="bold">+    # Added new validation</text>
+    <text x="15" y="169" fill="#66BB6A" font-weight="bold">+    if not data:</text>
+    <text x="15" y="187" fill="#66BB6A" font-weight="bold">+        return "No data"</text>
+    <text x="15" y="205" fill="#d4d4d4">     return str(data)</text>
+    <text x="15" y="223" fill="#EF5350" font-weight="bold">-    # TODO: Add validation</text>
+  </g>
+</svg>
