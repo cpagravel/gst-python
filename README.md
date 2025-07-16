@@ -118,10 +118,10 @@ pytest tests/test_gst.py -v      # Run specific test file with verbose output
 python scripts/generate_svg_examples.py
 ```
 
-## Compatability
+## Compatibility
 - Linux, Mac, Windows
 - Git version >2
-- Python3 (re: https://pythonclock.org/)
+- Python 3.6+ (supports all modern Python versions)
 
 ## TODO
 - Add more example scenarios
