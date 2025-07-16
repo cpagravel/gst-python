@@ -12,74 +12,49 @@ pip install gst
 
 ## Usage
 
-Here's a complete workflow demonstration showing how gst commands change your git status:
-
-### 1. View repository status
-Start by checking the current state of your repository:
 ```bash
-$ gst
+$ gst              # View git status
 ```
 ![Initial git status](docs/images/demo-01-status.svg)
 
-### 2. Get file path by reference
-Use file index to get the exact path (great for piping to other commands):
 ```bash
-$ gst 1
+$ gst 1            # Get file path by reference
 ```
 ![File reference output](docs/images/demo-02-reference.svg)
 
 ```bash
-$ cat $(gst 1)    # Display contents of file at index 1
-$ vim $(gst 1)    # Open file at index 1 in vim
-```
-
-### 3. Add files to staging area
-Stage the untracked README.md file:
-```bash
-$ gst -a 0
+$ gst -a 0         # Add files to staging area
 ```
 ![After adding file](docs/images/demo-03-after-add.svg)
 
-Notice how README.md is now "Added" in the INDEX column, ready for commit.
-
-### 4. Reset staged changes
-Remove the file from staging area:
 ```bash
-$ gst -r 0
+$ gst -r 0         # Reset staged changes
 ```
 ![After reset](docs/images/demo-04-after-reset.svg)
 
-The file is back to "Untrackd" status - no longer staged for commit.
-
-### 5. Checkout files to revert changes
-Revert working tree changes for src/main.py:
 ```bash
-$ gst -c 1
+$ gst -c 1         # Checkout files to revert changes
 ```
 ![After checkout](docs/images/demo-05-after-checkout.svg)
 
-The modified src/main.py has been reverted - notice it's no longer in the list.
-
-### 6. Delete untracked files
-Remove the untracked build/ directory:
 ```bash
-$ gst -D 2
+$ gst -D 2         # Delete files at index
 ```
 ![After delete](docs/images/demo-06-after-delete.svg)
 
-The build/ directory has been completely removed from the filesystem.
-
-### 7. View file differences
-See what changes remain in src/utils.py:
 ```bash
-$ gst -d 1
+$ gst -d 1         # View file differences
 ```
 ![Git diff output](docs/images/demo-07-diff.svg)
 
-### 8. Open file in editor
-Edit the remaining modified file:
 ```bash
-$ gst -e 1        # Opens src/utils.py in your default editor
+$ gst -e 1         # Open file in editor
+```
+
+```bash
+# Use file references with other commands
+$ cat $(gst 1)     # Display contents of file at index 1
+$ vim $(gst 1)     # Open file at index 1 in vim
 ```
 
 ### Range and selection syntax
