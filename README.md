@@ -130,6 +130,24 @@ python scripts/generate_svg_examples.py
 
 Due to [GitHub Actions dropping support for Python 3.6 and 3.7](https://github.com/actions/runner-images/issues/10893), we can no longer provide automated testing for these versions. However, we will continue to maintain compatibility when possible and provide periodic updates with manual testing to confirm functionality.
 
+## Performance Optimization
+
+Since `gst` relies on `git status`, optimizing git performance will directly improve `gst` performance. These settings can provide 50-75% faster operations for large repositories:
+
+```bash
+# Enable all git performance optimizations
+git config core.fsmonitor true          # File system monitor (Windows/macOS only)
+git config core.untrackedCache true     # Cache untracked file detection
+git config feature.manyFiles true       # Optimize for large repositories
+```
+
+**Features:**
+- **FSMonitor**: Background file monitoring, up to 75% faster (not supported on Linux)
+- **Untracked Cache**: Faster detection of untracked files
+- **feature.manyFiles**: Optimized index format for repositories with many files
+
+**Note:** FSMonitor provides the biggest performance boost for large repositories but may add overhead for small repositories.
+
 ## License MIT
 [View project License](LICENSE.md).
 

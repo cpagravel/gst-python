@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add logic in update_pypi.sh to ensure versions (in setup.cfg and pyproject.toml) remain in sync.
   - Will support Python 3.6 with best effort with manual tests and periodic releases for Python 3.6 & Python 3.7.
 - Added integration tests (for Python 3.8+).
+- Add recommendations for improving performance of `gst` on large repos.
 
 ## [0.1.9] - 2025-07-14
 
