@@ -92,31 +92,9 @@ All commands that accept `REF_RANGE` support flexible selection patterns:
 | `2:` | Unbounded range | `gst -c 2:` |
 | `0,2:4,6` | Mixed patterns | `gst -D 0,2:4,6` |
 
-## Development Setup
-To contribute to this project:
+## Contributing
 
-1. Clone the repository
-2. Run the development setup script:
-   ```bash
-   ./scripts/setup_dev.sh
-   ```
-
-This script installs development dependencies (ruff, mypy, pytest, build, twine, pytest) and sets up a pre-commit hook that automatically runs:
-- Code formatting (ruff format)
-- Linting (ruff check)
-- Type checking (mypy)
-- Unit tests (pytest)
-
-### Running tests
-```bash
-pytest tests/                    # Run all tests
-pytest tests/test_gst.py -v      # Run specific test file with verbose output
-```
-
-### Regenerating README images
-```bash
-python scripts/generate_svg_examples.py
-```
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, testing guidelines, and how to contribute to the project.
 
 ## Compatibility
 - Linux, Mac, Windows
