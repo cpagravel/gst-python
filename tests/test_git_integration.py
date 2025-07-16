@@ -510,6 +510,62 @@ class TestGitIntegration(GitIntegrationTestCase):
       # Final state should just have the modified file
       self.assert_git_status(repo_path, {"modified": ["feature.py"]})
 
+  def test_gst_operations_from_subfolder(self):
+    """
+    Test that gst commands work correctly when run from a subfolder of the repo.
+
+    This tests the scenario where:
+    - We have files at the top level and in subfolders
+    - We change CWD to a subfolder
+    - We can still reference and operate on files at any level
+    """
+    with self.temp_git_repo() as repo_path:
+      # Create the directory structure:
+      # .
+      # ├── subfolder/
+      # │   └── subfile.txt
+      # └── top_level_file.txt
+
+      # Create subfolder and files
+      subfolder_path = os.path.join(repo_path, "subfolder")
+      os.makedirs(subfolder_path)
+
+      self._create_file(repo_path, "top_level_file.txt", "content at top level")
+      self._create_file(repo_path, "subfolder/subfile.txt", "content in subfolder")
+
+      # Add files to git and commit
+      self._run_git_command(["git", "add", "."], cwd=repo_path)
+      self._run_git_command(["git", "commit", "-m", "Add test files"], cwd=repo_path)
+
+      # Modify both files to create changes
+      self._create_file(
+        repo_path, "top_level_file.txt", "modified content at top level"
+      )
+
+      # Verify initial state from repo root
+      self.assert_git_status(repo_path, {"modified": ["top_level_file.txt"]})
+
+      # Create a GitStatusToolForTesting instance that operates from the subfolder
+      gst_tool = GitStatusToolForTesting(subfolder_path)
+
+      # Run gst from subfolder - should see both files
+      gst_tool.run()
+      status_list = gst_tool._status_list
+
+      self.assertEqual(len(status_list), 1)
+
+      # Delete the file at the top folder
+      # This will only work if the tool can handle relative paths correctly
+      gst_tool.run("-D 0")
+
+      # Verify the file was deleted
+      self.assertFalse(
+        os.path.exists(os.path.join(repo_path, "top_level_file.txt")),
+        "top_level_file.txt should be deleted",
+      )
+
+      self.assert_git_status(repo_path, {"deleted": ["top_level_file.txt"]})
+
 
 if __name__ == "__main__":
   unittest.main()
