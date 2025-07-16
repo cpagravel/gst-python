@@ -4,6 +4,12 @@
 gst is short for **G**it **St**atus - it's a commandline app with some neat features for improving your workflow with git
 Note that gst is meant for in dark themed terminals
 
+## Installation
+Install from pip.
+```
+pip install gst
+```
+
 ## Usage
 
 Here's a complete workflow demonstration showing how gst commands change your git status:
@@ -86,12 +92,6 @@ All commands that accept `REF_RANGE` support flexible selection patterns:
 | `2:` | Unbounded range | `gst -c 2:` |
 | `0,2:4,6` | Mixed patterns | `gst -D 0,2:4,6` |
 
-## Installation
-Install from pip.
-```
-pip install gst
-```
-
 ## Development Setup
 To contribute to this project:
 
@@ -129,10 +129,6 @@ python scripts/generate_svg_examples.py
 - **Python 3.6, 3.7**: Best-effort support with periodic manual testing for compatibility
 
 Due to [GitHub Actions dropping support for Python 3.6 and 3.7](https://github.com/actions/runner-images/issues/10893), we can no longer provide automated testing for these versions. However, we will continue to maintain compatibility when possible and provide periodic updates with manual testing to confirm functionality.
-
-## TODO
-- Add more example scenarios
-- Consider adding animated GIFs for complex workflows
 
 ## License MIT
 [View project License](LICENSE.md).
