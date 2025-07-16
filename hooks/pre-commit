@@ -49,15 +49,20 @@ if [ $? -ne 0 ]; then
 fi
 
 # Re-add formatted files to staging
+echo "Re-adding formatted files to staging..."
 git add $PYTHON_FILES
 
 # Run ruff linter (includes PEP8 naming conventions)
 echo "Running ruff linter..."
-ruff check $PYTHON_FILES
+ruff check --fix $PYTHON_FILES
 if [ $? -ne 0 ]; then
     echo "Linting failed. Please fix the issues above."
     exit 1
 fi
+
+# Re-add files after linting fixes
+echo "Re-adding files after linting fixes..."
+git add $PYTHON_FILES
 
 # Run mypy type checker
 echo "Running mypy type checker..."
