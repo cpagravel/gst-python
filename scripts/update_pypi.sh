@@ -26,7 +26,7 @@
 #        password = your_password
 #
 # BEFORE RUNNING THIS SCRIPT:
-# 1. Update the version number in pyproject.toml
+# 1. Update the version number in both pyproject.toml and setup.cfg
 # 2. Update CHANGELOG.md with release notes
 # 3. Commit all changes to git
 # 4. Test the package locally: pip install -e .
@@ -115,7 +115,22 @@ log_success "All required tools are available"
 
 # Extract current version from pyproject.toml
 CURRENT_VERSION=$(grep '^version = ' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
-log_info "Current version: $CURRENT_VERSION"
+log_info "Current version in pyproject.toml: $CURRENT_VERSION"
+
+# Extract version from setup.cfg
+SETUP_CFG_VERSION=$(grep '^version = ' setup.cfg | sed 's/version = \(.*\)/\1/')
+log_info "Current version in setup.cfg: $SETUP_CFG_VERSION"
+
+# Check if versions are in sync
+if [[ "$CURRENT_VERSION" != "$SETUP_CFG_VERSION" ]]; then
+    log_error "Version mismatch detected!"
+    log_error "  pyproject.toml: $CURRENT_VERSION"
+    log_error "  setup.cfg: $SETUP_CFG_VERSION"
+    log_error "Please update both files to have the same version number."
+    exit 1
+fi
+
+log_success "Version numbers are in sync: $CURRENT_VERSION"
 
 # Check if git repository is clean
 if ! git diff-index --quiet HEAD --; then
