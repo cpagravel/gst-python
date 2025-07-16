@@ -17,15 +17,13 @@ classifiers = [
     "Intended Audience :: Developers",
     "Topic :: Software Development :: Version Control :: Git",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.6",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
 ]
-requires-python = ">=3.6"
+requires-python = ">=3.8"
 
 [project.urls]
 Homepage = "https://github.com/cpagravel/gst-python"
@@ -75,8 +73,8 @@ exclude = [
 # Same as Black.
 line-length = 88
 
-# Assume Python 3.7+ (ruff doesn't work for 3.6)
-target-version = "py37"
+# Assume Python 3.8+ (minimum supported version)
+target-version = "py38"
 indent-width = 2  # ← Change from default 4 to 2
 
 [tool.ruff.format]

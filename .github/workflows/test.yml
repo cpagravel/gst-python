@@ -8,16 +8,10 @@ on:
 
 jobs:
   test:
-    runs-on: ${{ matrix.os || 'ubuntu-latest' }}
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
-        include:
-          # Python 3.6 and 3.7 require older Ubuntu
-          - python-version: "3.6"
-            os: ubuntu-20.04
-          - python-version: "3.7"
-            os: ubuntu-20.04
 
     steps:
     - uses: actions/checkout@v4

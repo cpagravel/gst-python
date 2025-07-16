@@ -121,7 +121,14 @@ python scripts/generate_svg_examples.py
 ## Compatibility
 - Linux, Mac, Windows
 - Git version >=2
-- Python 3.6+ (supports all modern Python versions)
+- Python 3.8+ (fully tested and supported)
+- Python 3.6, 3.7 (best-effort support with manual testing)
+
+### Python Version Support Policy
+- **Python 3.8+**: Fully supported with automated testing in CI/CD
+- **Python 3.6, 3.7**: Best-effort support with periodic manual testing for compatibility
+
+Due to [GitHub Actions dropping support for Python 3.6 and 3.7](https://github.com/actions/runner-images/issues/10893), we can no longer provide automated testing for these versions. However, we will continue to maintain compatibility when possible and provide periodic updates with manual testing to confirm functionality.
 
 ## TODO
 - Add more example scenarios
