@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.12] - 2025-07-16 (Python 3.6)
+
+### Fixed
+- Use external links in README.md so they work on sites like PyPi
+
 ## [0.1.11] - 2025-07-16 (Python 3.6)
 
 ### Fixed

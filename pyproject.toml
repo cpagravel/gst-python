@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "gst"
-version = "0.1.11"
+version = "0.1.12"
 description = "Git status tool"
 readme = "README.md"
 license = {text = "MIT"}
@@ -30,7 +30,7 @@ requires-python = ">=3.6"
 [project.urls]
 Homepage = "https://github.com/cpagravel/gst-python"
 Repository = "https://github.com/cpagravel/gst-python"
-Download = "https://github.com/cpagravel/gst-python/archive/0.1.11.tar.gz"
+Download = "https://github.com/cpagravel/gst-python/archive/0.1.12.tar.gz"
 
 [project.scripts]
 gst = "gst:main"
