@@ -1,4 +1,4 @@
-# gst [![MIT License][license-badge]](LICENSE.md) [![Tests][tests-badge]][tests-url] [![Coverage][coverage-badge]][coverage-url]
+# gst [![MIT License][license-badge]](https://github.com/cpagravel/gst-python/blob/master/LICENSE.md) [![Tests][tests-badge]][tests-url] [![Coverage][coverage-badge]][coverage-url]
 
 ## Synposis
 gst is short for **G**it **St**atus - it's a commandline app with some neat features for improving your workflow with git
@@ -15,37 +15,37 @@ pip install gst
 ```bash
 $ gst              # View git status
 ```
-![Initial git status](docs/images/demo-01-status.svg)
+![Initial git status](https://raw.githubusercontent.com/cpagravel/gst-python/master/docs/images/demo-01-status.svg)
 
 ```bash
 $ gst 1            # Get file path by reference
 ```
-![File reference output](docs/images/demo-02-reference.svg)
+![File reference output](https://raw.githubusercontent.com/cpagravel/gst-python/master/docs/images/demo-02-reference.svg)
 
 ```bash
 $ gst -a 0         # Add files to staging area
 ```
-![After adding file](docs/images/demo-03-after-add.svg)
+![After adding file](https://raw.githubusercontent.com/cpagravel/gst-python/master/docs/images/demo-03-after-add.svg)
 
 ```bash
 $ gst -r 0         # Reset staged changes
 ```
-![After reset](docs/images/demo-04-after-reset.svg)
+![After reset](https://raw.githubusercontent.com/cpagravel/gst-python/master/docs/images/demo-04-after-reset.svg)
 
 ```bash
 $ gst -c 1         # Checkout files to revert changes
 ```
-![After checkout](docs/images/demo-05-after-checkout.svg)
+![After checkout](https://raw.githubusercontent.com/cpagravel/gst-python/master/docs/images/demo-05-after-checkout.svg)
 
 ```bash
 $ gst -D 2         # Delete files at index
 ```
-![After delete](docs/images/demo-06-after-delete.svg)
+![After delete](https://raw.githubusercontent.com/cpagravel/gst-python/master/docs/images/demo-06-after-delete.svg)
 
 ```bash
 $ gst -d 1         # View file differences
 ```
-![Git diff output](docs/images/demo-07-diff.svg)
+![Git diff output](https://raw.githubusercontent.com/cpagravel/gst-python/master/docs/images/demo-07-diff.svg)
 
 ```bash
 $ gst -e 1         # Open file in editor
@@ -69,7 +69,7 @@ All commands that accept `REF_RANGE` support flexible selection patterns:
 
 ## Contributing
 
-Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, testing guidelines, and how to contribute to the project.
+Contributions are welcome! See [CONTRIBUTING.md](https://github.com/cpagravel/gst-python/blob/master/CONTRIBUTING.md) for development setup, testing guidelines, and how to contribute to the project.
 
 ## Compatibility
 - Linux, Mac, Windows
@@ -100,9 +100,6 @@ git config feature.manyFiles true       # Optimize for large repositories
 - **feature.manyFiles**: Optimized index format for repositories with many files
 
 **Note:** FSMonitor provides the biggest performance boost for large repositories but may add overhead for small repositories.
-
-## License MIT
-[View project License](LICENSE.md).
 
 [license-badge]: https://img.shields.io/badge/license-MIT-007EC7.svg
 [tests-badge]: https://github.com/cpagravel/gst-python/workflows/Tests/badge.svg
