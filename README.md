@@ -120,7 +120,7 @@ python scripts/generate_svg_examples.py
 
 ## Compatibility
 - Linux, Mac, Windows
-- Git version >2
+- Git version >=2
 - Python 3.6+ (supports all modern Python versions)
 
 ## TODO

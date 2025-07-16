@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added back support for Python 3.6+ (add back setup.cfg and setup.py).
   - Add logic in update_pypi.sh to ensure versions (in setup.cfg and pyproject.toml) remain in sync.
+- Added integration tests.
 
 ## [0.1.9] - 2025-07-14
 

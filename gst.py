@@ -315,7 +315,16 @@ class GitStatusTool:
     parser.epilog = self._ref_help_message
     return parser
 
-  def run(self) -> None:
+  def run_with_args(self, args_list=None):
+    """
+    Run gst with specific arguments (useful for testing).
+
+    Args:
+      args_list: List of command line arguments, or None to use sys.argv
+
+    Returns:
+      Self for method chaining or inspection
+    """
     ######################
     # Generate Status List
     ######################
@@ -325,8 +334,15 @@ class GitStatusTool:
       LOGGER.info(e)
       exit(1)
 
-    self._args = self._parser.parse_args()
+    self._args = self._parser.parse_args(args_list)
+    self._execute_operation()
+    return self
 
+  def run(self) -> None:
+    """Main entry point for CLI usage."""
+    self.run_with_args()
+
+  def _execute_operation(self):
     if self._args.debug:
       LOGGER.setLevel(logging.DEBUG)
 
