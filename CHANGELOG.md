@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.13] - 2025-07-16 (Python 3.6)
+
+### Fixed
+- Unable to checkout files if one of the files doesn't exist at HEAD. Added special handling and warning message.
+
+### Changed
+- Error message of `-e` (edit) command to be RED to match other error messages.
+
 ## [0.1.12] - 2025-07-16 (Python 3.6)
 
 ### Fixed
