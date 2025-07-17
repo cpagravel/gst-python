@@ -829,6 +829,55 @@ class TestGitCheckoutFunctionality:
     assert mock_bash.call_count == 3
     mock_bash.assert_any_call(["git", "checkout", "HEAD", "file1.py", "file2.py"])
 
+  @patch("gst.bash")
+  @patch("sys.argv", ["gst", "-c", "0,1,2,3"])
+  def test_checkout_skips_files_not_present_at_head(self, mock_bash):
+    """Test checkout with mix of valid and invalid files."""
+    mock_bash.side_effect = [
+      (b" M modified.py\nMM both_modified.py\nA  added.py\n?? untracked.py\n", b""),
+      (b"", b""),  # git checkout call
+      (b"", b""),  # _display_list call
+    ]
+
+    tool = gst.GitStatusTool()
+    tool.run()
+
+    # Should only checkout the files that exist at HEAD
+    assert mock_bash.call_count == 3
+    mock_bash.assert_any_call(
+      ["git", "checkout", "HEAD", "modified.py", "both_modified.py"]
+    )
+
+  @patch("gst.bash")
+  @patch("sys.argv", ["gst", "-c", "0,1"])
+  @patch("gst.LOGGER")
+  def test_checkout_warns_about_nonexistent_files(self, mock_logger, mock_bash):
+    """Test that checkout shows warning for files that don't exist at HEAD."""
+    mock_bash.side_effect = [
+      (b"A  added.py\n?? untracked.py\n", b""),  # _generate_status_list call
+      (b"", b""),  # git checkout call (should be empty)
+      (b"", b""),  # _display_list call
+    ]
+
+    tool = gst.GitStatusTool()
+    tool.run()
+
+    # Verify warning message was logged - check all calls to find the right one
+    mock_logger.info.assert_called()
+
+    # Look through all calls to find the warning message
+    warning_found = False
+    for call in mock_logger.info.call_args_list:
+      call_args = call[0][0]
+      if "don't exist at HEAD" in call_args:
+        warning_found = True
+        assert "added.py" in call_args
+        assert "untracked.py" in call_args
+        break
+
+    call_list = [call[0][0] for call in mock_logger.info.call_args_list]
+    assert warning_found, f"Warning message not found in calls: {call_list}"
+
 
 class TestGitEditFunctionality:
   """Test the 'gst -e' (editor) functionality."""

@@ -80,7 +80,7 @@ def open_in_editor(file_path: str) -> None:
     # Run editor in foreground so it can take over the terminal
     subprocess.run(cmds)
   else:
-    LOGGER.info(Colors.colorize("No default editor found", Colors.YELLOW))
+    LOGGER.info(Colors.colorize("No default editor found", Colors.RED))
 
 
 def check_valid_ref(num: Union[str, int], item_count: int) -> int:
@@ -378,9 +378,28 @@ class GitStatusTool:
     elif self._args.checkout is not None:  # git checkout
       cmds = ["git", "checkout", "HEAD"]
       input_range = self._parse_range(self._args.checkout)
-      file_list = [self._status_list[x]["filePath"] for x in input_range]
-      cmds.extend(file_list)
+      file_list_tuple = self._get_status_path_tuples(input_range)
+      # Cannot checkout added, or untracked files because they don't exist at HEAD
+      file_list_exists_at_head = [
+        file_path
+        for mod, file_path in file_list_tuple
+        if "A" not in mod and "?" not in mod
+      ]
+      file_list_nonexistant_at_head = [
+        file_path for mod, file_path in file_list_tuple if "A" in mod or "?" in mod
+      ]
+      cmds.extend(file_list_exists_at_head)
       bash(cmds)
+      if file_list_nonexistant_at_head:
+        LOGGER.info(
+          Colors.colorize(
+            "Some files being checked out don't exist at HEAD:\n{}".format(
+              ", ".join(file_list_nonexistant_at_head[:5])
+              + (", ..." if len(file_list_nonexistant_at_head) > 5 else "")
+            ),
+            Colors.RED,
+          )
+        )
       self._display_list()
     elif self._args.diff is not None:  # git diff
       cmds = ["git", "diff", "HEAD"]

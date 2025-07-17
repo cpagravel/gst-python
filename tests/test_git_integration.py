@@ -566,6 +566,56 @@ class TestGitIntegration(GitIntegrationTestCase):
 
       self.assert_git_status(repo_path, {"deleted": ["top_level_file.txt"]})
 
+  def test_checkout_with_mixed_file_types(self):
+    """
+    Integration test for checkout with REF_RANGE that includes
+    Modified, Added, and Untracked files.
+
+    This test verifies that:
+    1. Checkout works for modified files that exist at HEAD
+    2. Checkout skips added and untracked files that don't exist at HEAD
+    """
+    with self.temp_git_repo() as repo_path:
+      # Set up a complex scenario with different file types
+      self.setup_git_state(
+        repo_path,
+        {
+          "committed_files": ["existing.py", "another.py"],
+          "modified_files": ["existing.py"],  # This will be modified
+          "new_files": ["untracked.py"],  # This will be untracked
+        },
+      )
+
+      # Add a new file to staging (Added status)
+      self._create_file(repo_path, "added.py", "new file content")
+      self._run_git_command(["git", "add", "added.py"], cwd=repo_path)
+
+      # Verify initial state: Modified, Added, Untracked
+      self.assert_git_status(
+        repo_path,
+        {
+          "modified": ["existing.py"],
+          "staged": ["added.py"],
+          "untracked": ["untracked.py"],
+        },
+      )
+
+      # Create gst tool instance for this repo
+      gst_tool = GitStatusToolForTesting(repo_path)
+
+      # Get the status list to understand file ordering
+      gst_tool.run("-c 0:")  # Empty args to generate status list
+
+      # The modified file should no longer be modified after checkout
+      self.assert_git_status(
+        repo_path,
+        {
+          "modified": [],
+          "staged": ["added.py"],
+          "untracked": ["untracked.py"],
+        },
+      )
+
 
 if __name__ == "__main__":
   unittest.main()
