@@ -190,6 +190,20 @@ class GitStatusTool:
       )
       exit(1)
 
+  def _get_status_path_tuples(self, input_range: List[int]) -> List[Tuple[str, str]]:
+    """Get the status path tuples from the status list.
+
+    Args:
+      input_range: List of indices to get from the status list. (e.g. [0, 5, 6])
+
+    Returns:
+      List of tuples where each tuple contains is (modification status, file path).
+    """
+    return [
+      (self._status_list[x]["mod"], self._status_list[x]["filePath"])
+      for x in input_range
+    ]
+
   def _check_valid_range(self, range_string: str) -> str:
     """Wrapper for the standalone check_valid_range function."""
     try:
@@ -351,16 +365,12 @@ class GitStatusTool:
     elif self._args.add is not None:  # git add
       cmds = ["git", "add"]
       input_range = self._parse_range(self._args.add)
-      # Split for deleted items. Git does not like handling both in the git add calls.
+      file_list_tuple = self._get_status_path_tuples(input_range)
       file_list_non_deleted = [
-        self._status_list[x]["filePath"]
-        for x in input_range
-        if "D" not in self._status_list[x]["mod"]
+        file_path for mod, file_path in file_list_tuple if "D" not in mod
       ]
       file_list_deleted = [
-        self._status_list[x]["filePath"]
-        for x in input_range
-        if "D" in self._status_list[x]["mod"]
+        file_path for mod, file_path in file_list_tuple if "D" in mod
       ]
       bash(cmds + file_list_non_deleted) if file_list_non_deleted else []
       bash(cmds + file_list_deleted) if file_list_deleted else []
